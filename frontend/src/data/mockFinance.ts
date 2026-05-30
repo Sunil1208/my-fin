@@ -20,6 +20,7 @@ export type CategoryOption = {
   parent: string;
   kind: CategoryKind;
   accent: 'emerald' | 'indigo' | 'coral';
+  isCustom?: boolean;
 };
 
 export type Transaction = {
@@ -111,7 +112,7 @@ export const initialAccounts: Account[] = [
   },
 ];
 
-export const categories: CategoryOption[] = [
+export const initialCategories: CategoryOption[] = [
   {
     id: 'cat_food',
     label: 'Food & Lifestyle',

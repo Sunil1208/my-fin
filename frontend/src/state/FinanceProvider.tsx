@@ -2,8 +2,8 @@ import { createContext, PropsWithChildren, useCallback, useContext, useMemo, use
 
 import {
   budget,
-  categories,
   initialAccounts,
+  initialCategories,
   initialDues,
   initialProfile,
   initialTransactions,
@@ -47,6 +47,13 @@ export type ProfileInput = {
   cycleStartDay: number;
 };
 
+export type CategoryInput = {
+  label: string;
+  parent: string;
+  kind: CategoryOption['kind'];
+  accent: CategoryOption['accent'];
+};
+
 type FinanceContextValue = {
   accounts: Account[];
   categories: CategoryOption[];
@@ -76,6 +83,7 @@ type FinanceContextValue = {
   commitParsedTransaction: () => boolean;
   addManualTransaction: (input: ManualTransactionInput) => boolean;
   addAccount: (input: AccountInput) => boolean;
+  addCategory: (input: CategoryInput) => boolean;
   updateProfile: (input: ProfileInput) => boolean;
   toggleDueSettlement: (id: string) => void;
   toggleTripMode: () => void;
@@ -87,6 +95,7 @@ export function FinanceProvider({ children }: PropsWithChildren) {
   const [syncMode, setSyncMode] = useState<SyncMode>('locked');
   const [profile, setProfile] = useState(initialProfile);
   const [accounts, setAccounts] = useState(initialAccounts);
+  const [categories, setCategories] = useState(initialCategories);
   const [transactions, setTransactions] = useState(initialTransactions);
   const [dues, setDues] = useState(initialDues);
   const [parserResult, setParserResult] = useState<ParsedAlert | null>(null);
@@ -209,8 +218,42 @@ export function FinanceProvider({ children }: PropsWithChildren) {
 
       return true;
     },
-    [accounts],
+    [accounts, categories],
   );
+
+  const addCategory = useCallback((input: CategoryInput) => {
+    const label = input.label.trim();
+    const parent = input.parent.trim();
+
+    if (!label || !parent) {
+      return false;
+    }
+
+    const duplicate = categories.some(
+      (category) =>
+        category.kind === input.kind &&
+        category.label.toLowerCase() === label.toLowerCase() &&
+        category.parent.toLowerCase() === parent.toLowerCase(),
+    );
+
+    if (duplicate) {
+      return false;
+    }
+
+    setCategories((items) => [
+      {
+        id: `cat_custom_${Date.now()}`,
+        label,
+        parent,
+        kind: input.kind,
+        accent: input.accent,
+        isCustom: true,
+      },
+      ...items,
+    ]);
+
+    return true;
+  }, [categories]);
 
   const addAccount = useCallback((input: AccountInput) => {
     const name = input.name.trim();
@@ -317,6 +360,7 @@ export function FinanceProvider({ children }: PropsWithChildren) {
       commitParsedTransaction,
       addManualTransaction,
       addAccount,
+      addCategory,
       updateProfile,
       toggleDueSettlement: (id: string) => {
         setDues((items) =>
@@ -328,6 +372,7 @@ export function FinanceProvider({ children }: PropsWithChildren) {
     [
       accounts,
       addAccount,
+      addCategory,
       activeObligations,
       addManualTransaction,
       aggregateAssets,
