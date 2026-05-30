@@ -54,6 +54,13 @@ export type CategoryInput = {
   accent: CategoryOption['accent'];
 };
 
+export type TransactionAdjustmentInput = {
+  transactionId: string;
+  amount: number;
+  mode: 'refund' | 'adjustment';
+  note: string;
+};
+
 type FinanceContextValue = {
   accounts: Account[];
   categories: CategoryOption[];
@@ -84,6 +91,7 @@ type FinanceContextValue = {
   addManualTransaction: (input: ManualTransactionInput) => boolean;
   addAccount: (input: AccountInput) => boolean;
   addCategory: (input: CategoryInput) => boolean;
+  recordTransactionAdjustment: (input: TransactionAdjustmentInput) => boolean;
   updateProfile: (input: ProfileInput) => boolean;
   toggleDueSettlement: (id: string) => void;
   toggleTripMode: () => void;
@@ -186,6 +194,7 @@ export function FinanceProvider({ children }: PropsWithChildren) {
         id: `tx_manual_${Date.now()}`,
         title,
         type: input.type,
+        flow: input.type === 'Income' ? 'inflow' : 'outflow',
         accountId: selectedAccount.id,
         account: selectedAccount.name,
         category: selectedCategory.label,
@@ -220,6 +229,19 @@ export function FinanceProvider({ children }: PropsWithChildren) {
     },
     [accounts, categories],
   );
+
+  const applyAccountDelta = useCallback((accountId: string, delta: number) => {
+    setAccounts((items) =>
+      items.map((account) =>
+        account.id === accountId
+          ? {
+              ...account,
+              balance: account.balance + delta,
+            }
+          : account,
+      ),
+    );
+  }, []);
 
   const addCategory = useCallback((input: CategoryInput) => {
     const label = input.label.trim();
@@ -326,6 +348,77 @@ export function FinanceProvider({ children }: PropsWithChildren) {
     return didCommit;
   }, [addManualTransaction, parserResult]);
 
+  const recordTransactionAdjustment = useCallback(
+    (input: TransactionAdjustmentInput) => {
+      const sourceTransaction = transactions.find((transaction) => transaction.id === input.transactionId);
+      const sourceAccount = sourceTransaction
+        ? accounts.find((account) => account.id === sourceTransaction.accountId)
+        : null;
+      const amount = Math.abs(Number(input.amount));
+      const note = input.note.trim();
+
+      if (!sourceTransaction || !sourceAccount || !amount || !note) {
+        return false;
+      }
+
+      const isDerivedEntry = sourceTransaction.type === 'Refund' || sourceTransaction.type === 'Adjustment';
+      const linkedOffsetTotal = transactions
+        .filter(
+          (transaction) =>
+            transaction.linkedTransactionId === sourceTransaction.id &&
+            transaction.flow !== sourceTransaction.flow,
+        )
+        .reduce((sum, transaction) => sum + transaction.amount, 0);
+      const remainingOffset = Math.max(0, sourceTransaction.amount - linkedOffsetTotal);
+
+      if (
+        isDerivedEntry ||
+        amount > remainingOffset ||
+        (input.mode === 'refund' && sourceTransaction.flow !== 'outflow')
+      ) {
+        return false;
+      }
+
+      const flow: Transaction['flow'] =
+        sourceTransaction.flow === 'outflow' ? 'inflow' : 'outflow';
+      const nextTransaction: Transaction = {
+        id: `tx_adjust_${Date.now()}`,
+        title:
+          input.mode === 'refund'
+            ? `Refund - ${sourceTransaction.title}`
+            : `Adjustment - ${sourceTransaction.title}`,
+        type: input.mode === 'refund' ? 'Refund' : 'Adjustment',
+        flow,
+        accountId: sourceTransaction.accountId,
+        account: sourceTransaction.account,
+        category: sourceTransaction.category,
+        amount,
+        status: 'local_sqlite',
+        timestamp: 'Just now',
+        linkedTransactionId: sourceTransaction.id,
+        note,
+      };
+
+      setTransactions((items) => [nextTransaction, ...items]);
+
+      const accountDelta = flow === 'inflow' ? amount : -amount;
+      applyAccountDelta(sourceTransaction.accountId, accountDelta);
+
+      if (sourceTransaction.flow === 'outflow') {
+        setCurrentMonthSpends((value) => Math.max(0, value - amount));
+      }
+
+      if (sourceAccount.type === 'credit-card') {
+        setCardObligationAdjustment((value) =>
+          flow === 'inflow' ? value - amount : value + amount,
+        );
+      }
+
+      return true;
+    },
+    [accounts, applyAccountDelta, transactions],
+  );
+
   const value = useMemo<FinanceContextValue>(
     () => ({
       accounts,
@@ -361,6 +454,7 @@ export function FinanceProvider({ children }: PropsWithChildren) {
       addManualTransaction,
       addAccount,
       addCategory,
+      recordTransactionAdjustment,
       updateProfile,
       toggleDueSettlement: (id: string) => {
         setDues((items) =>
@@ -385,6 +479,7 @@ export function FinanceProvider({ children }: PropsWithChildren) {
       netWorth,
       parserResult,
       profile,
+      recordTransactionAdjustment,
       syncMode,
       totalLiquidCash,
       transactions,

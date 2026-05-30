@@ -1,17 +1,38 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { Transaction } from '@/src/data/mockFinance';
 import { formatSignedInr } from '@/src/lib/format';
 import { colors, fonts, radius, spacing } from '@/src/theme/tokens';
 
-export function TransactionRow({ transaction }: { transaction: Transaction }) {
-  const isIncome = transaction.type === 'Income';
+type Props = {
+  onPress?: () => void;
+  transaction: Transaction;
+};
+
+export function TransactionRow({ onPress, transaction }: Props) {
+  const isInflow = transaction.flow === 'inflow';
+  const isAdjustment = transaction.type === 'Adjustment';
+  const statusLabel =
+    transaction.type === 'Refund'
+      ? 'refund'
+      : transaction.type === 'Adjustment'
+        ? 'adjust'
+        : transaction.status === 'synced_postgres'
+          ? 'cloud'
+          : 'local';
+  const accentColor = isInflow ? colors.emerald400 : isAdjustment ? colors.coral400 : colors.white;
 
   return (
-    <View style={styles.row}>
+    <Pressable
+      accessibilityRole={onPress ? 'button' : undefined}
+      disabled={!onPress}
+      onPress={onPress}
+      style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}>
       <View style={styles.left}>
-        <View style={[styles.iconBox, { borderColor: isIncome ? `${colors.emerald500}44` : colors.obsidian800 }]}>
-          <Text style={styles.iconText}>{isIncome ? '+' : '-'}</Text>
+        <View style={[styles.iconBox, { borderColor: isInflow ? `${colors.emerald500}44` : colors.obsidian800 }]}>
+          <Text style={[styles.iconText, { color: isInflow ? colors.emerald400 : colors.coral400 }]}>
+            {isInflow ? '+' : '-'}
+          </Text>
         </View>
         <View style={styles.copy}>
           <Text numberOfLines={1} style={styles.title}>
@@ -23,12 +44,12 @@ export function TransactionRow({ transaction }: { transaction: Transaction }) {
         </View>
       </View>
       <View style={styles.amountBlock}>
-        <Text style={[styles.amount, { color: isIncome ? colors.emerald400 : colors.white }]}>
-          {formatSignedInr(isIncome ? transaction.amount : -transaction.amount)}
+        <Text style={[styles.amount, { color: accentColor }]}>
+          {formatSignedInr(isInflow ? transaction.amount : -transaction.amount)}
         </Text>
-        <Text style={styles.status}>{transaction.status === 'synced_postgres' ? 'cloud' : 'local'}</Text>
+        <Text style={styles.status}>{statusLabel}</Text>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -44,6 +65,10 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     backgroundColor: `${colors.obsidian900}A6`,
     gap: spacing.md,
+  },
+  rowPressed: {
+    opacity: 0.76,
+    transform: [{ scale: 0.99 }],
   },
   left: {
     flex: 1,
@@ -61,7 +86,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.obsidian950,
   },
   iconText: {
-    color: colors.emerald400,
     fontFamily: fonts.monoBold,
     fontSize: 16,
   },

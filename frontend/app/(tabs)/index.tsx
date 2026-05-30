@@ -11,6 +11,7 @@ import { LockedState } from '@/src/components/LockedState';
 import { ManualTransactionSheet } from '@/src/components/ManualTransactionSheet';
 import { MetricTile } from '@/src/components/MetricTile';
 import { ProfilePreferencesSheet } from '@/src/components/ProfilePreferencesSheet';
+import { TransactionDetailSheet } from '@/src/components/TransactionDetailSheet';
 import { TransactionRow } from '@/src/components/TransactionRow';
 import {
   AmountText,
@@ -32,6 +33,7 @@ export default function DashboardScreen() {
   const [accountVisible, setAccountVisible] = useState(false);
   const [profileVisible, setProfileVisible] = useState(false);
   const [categoryVisible, setCategoryVisible] = useState(false);
+  const [selectedTransactionId, setSelectedTransactionId] = useState<string | null>(null);
   const spendingPercent = (finance.currentMonthSpends / finance.spendingCeiling) * 100;
   const categorySummary = useMemo(() => {
     const expenseCount = finance.categories.filter((category) => category.kind === 'Expense').length;
@@ -54,6 +56,10 @@ export default function DashboardScreen() {
       topExpenseAmount: topExpense?.[1] ?? 0,
     };
   }, [finance.categories, finance.transactions]);
+  const selectedTransaction = useMemo(
+    () => finance.transactions.find((transaction) => transaction.id === selectedTransactionId) ?? null,
+    [finance.transactions, selectedTransactionId],
+  );
 
   return (
     <AppBackground>
@@ -201,7 +207,11 @@ export default function DashboardScreen() {
               </View>
               <View style={styles.feed}>
                 {finance.transactions.map((transaction) => (
-                  <TransactionRow key={transaction.id} transaction={transaction} />
+                  <TransactionRow
+                    key={transaction.id}
+                    onPress={() => setSelectedTransactionId(transaction.id)}
+                    transaction={transaction}
+                  />
                 ))}
               </View>
             </ScrollView>
@@ -216,6 +226,10 @@ export default function DashboardScreen() {
             <AccountSetupSheet onClose={() => setAccountVisible(false)} visible={accountVisible} />
             <ProfilePreferencesSheet onClose={() => setProfileVisible(false)} visible={profileVisible} />
             <CategoryRoutingSheet onClose={() => setCategoryVisible(false)} visible={categoryVisible} />
+            <TransactionDetailSheet
+              onClose={() => setSelectedTransactionId(null)}
+              transaction={selectedTransaction}
+            />
           </>
         )}
       </SafeAreaView>
