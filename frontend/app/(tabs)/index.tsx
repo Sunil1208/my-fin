@@ -1,10 +1,11 @@
 import { SymbolView } from 'expo-symbols';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AccountBalanceCard } from '@/src/components/AccountBalanceCard';
 import { AccountSetupSheet } from '@/src/components/AccountSetupSheet';
+import { CategoryRoutingSheet } from '@/src/components/CategoryRoutingSheet';
 import { FinanceHeader } from '@/src/components/FinanceHeader';
 import { LockedState } from '@/src/components/LockedState';
 import { ManualTransactionSheet } from '@/src/components/ManualTransactionSheet';
@@ -30,7 +31,29 @@ export default function DashboardScreen() {
   const [entryVisible, setEntryVisible] = useState(false);
   const [accountVisible, setAccountVisible] = useState(false);
   const [profileVisible, setProfileVisible] = useState(false);
+  const [categoryVisible, setCategoryVisible] = useState(false);
   const spendingPercent = (finance.currentMonthSpends / finance.spendingCeiling) * 100;
+  const categorySummary = useMemo(() => {
+    const expenseCount = finance.categories.filter((category) => category.kind === 'Expense').length;
+    const incomeCount = finance.categories.filter((category) => category.kind === 'Income').length;
+    const customCount = finance.categories.filter((category) => category.isCustom).length;
+    const expenseTotals = finance.transactions
+      .filter((transaction) => transaction.type === 'Expense')
+      .reduce<Record<string, number>>((totals, transaction) => {
+        totals[transaction.category] = (totals[transaction.category] ?? 0) + transaction.amount;
+        return totals;
+      }, {});
+    const topExpense =
+      Object.entries(expenseTotals).sort(([, left], [, right]) => right - left)[0] ?? null;
+
+    return {
+      expenseCount,
+      incomeCount,
+      customCount,
+      topExpenseLabel: topExpense?.[0] ?? 'No expenses',
+      topExpenseAmount: topExpense?.[1] ?? 0,
+    };
+  }, [finance.categories, finance.transactions]);
 
   return (
     <AppBackground>
@@ -125,6 +148,38 @@ export default function DashboardScreen() {
                 </View>
               </Card>
 
+              <Card style={styles.categoryRoutingCard}>
+                <View style={styles.sectionHeader}>
+                  <View>
+                    <Text style={styles.sectionTitle}>Category Routing</Text>
+                    <Text style={styles.categorySubline}>Expense and income tree nodes</Text>
+                  </View>
+                  <GhostButton accent="indigo" onPress={() => setCategoryVisible(true)} style={styles.compactButton}>
+                    Manage
+                  </GhostButton>
+                </View>
+                <View style={styles.categoryMetricGrid}>
+                  <View style={styles.categoryMetric}>
+                    <Text style={styles.profileMatrixLabel}>Expense Nodes</Text>
+                    <Text style={styles.profileMatrixValue}>{categorySummary.expenseCount}</Text>
+                  </View>
+                  <View style={styles.categoryMetric}>
+                    <Text style={styles.profileMatrixLabel}>Income Nodes</Text>
+                    <Text style={styles.profileMatrixValue}>{categorySummary.incomeCount}</Text>
+                  </View>
+                  <View style={styles.categoryMetric}>
+                    <Text style={styles.profileMatrixLabel}>Custom</Text>
+                    <Text style={styles.profileMatrixValue}>{categorySummary.customCount}</Text>
+                  </View>
+                </View>
+                <View style={styles.topCategoryRow}>
+                  <Text numberOfLines={1} style={styles.topCategoryLabel}>
+                    {categorySummary.topExpenseLabel}
+                  </Text>
+                  <Text style={styles.topCategoryAmount}>{formatInr(categorySummary.topExpenseAmount)}</Text>
+                </View>
+              </Card>
+
               <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>Account Balance Matrix</Text>
                 <GhostButton accent="emerald" onPress={() => setAccountVisible(true)} style={styles.compactButton}>
@@ -160,6 +215,7 @@ export default function DashboardScreen() {
             <ManualTransactionSheet onClose={() => setEntryVisible(false)} visible={entryVisible} />
             <AccountSetupSheet onClose={() => setAccountVisible(false)} visible={accountVisible} />
             <ProfilePreferencesSheet onClose={() => setProfileVisible(false)} visible={profileVisible} />
+            <CategoryRoutingSheet onClose={() => setCategoryVisible(false)} visible={categoryVisible} />
           </>
         )}
       </SafeAreaView>
@@ -284,6 +340,51 @@ const styles = StyleSheet.create({
   },
   budgetCard: {
     gap: spacing.md,
+  },
+  categoryRoutingCard: {
+    gap: spacing.md,
+  },
+  categorySubline: {
+    color: colors.obsidian400,
+    fontFamily: fonts.sans,
+    fontSize: 11,
+    marginTop: 3,
+  },
+  categoryMetricGrid: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  categoryMetric: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: colors.obsidian850,
+    borderRadius: 10,
+    padding: spacing.sm,
+    backgroundColor: colors.obsidian950,
+    gap: 3,
+  },
+  topCategoryRow: {
+    minHeight: 42,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: `${colors.indigo500}33`,
+    borderRadius: 12,
+    paddingHorizontal: spacing.md,
+    backgroundColor: `${colors.indigo500}12`,
+    gap: spacing.md,
+  },
+  topCategoryLabel: {
+    flex: 1,
+    color: colors.white,
+    fontFamily: fonts.sansBold,
+    fontSize: 12,
+  },
+  topCategoryAmount: {
+    color: colors.indigo400,
+    fontFamily: fonts.monoBold,
+    fontSize: 12,
   },
   rowBetween: {
     alignItems: 'center',
