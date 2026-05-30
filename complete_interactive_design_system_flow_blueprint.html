@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>my-fin // Complete High-Fidelity UI/UX Prototype</title>
+    
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Load Premium Typography and Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Tailwind Configurations -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        obsidian: {
+                            50: '#F4F5F6',
+                            100: '#E9EAEB',
+                            200: '#C7C9CC',
+                            300: '#A4A8AD',
+                            400: '#606770',
+                            500: '#1C2530',
+                            800: '#111821',
+                            900: '#0A0E14',
+                            950: '#05070A',
+                        },
+                        emeraldGlow: {
+                            100: '#D1FAE5',
+                            400: '#34D399',
+                            500: '#10B981',
+                            600: '#059669',
+                        },
+                        velvetIndigo: {
+                            100: '#E0E7FF',
+                            400: '#818CF8',
+                            500: '#6366F1',
+                            600: '#4F46E5',
+                        },
+                        coralWarning: {
+                            100: '#FFE4E6',
+                            400: '#FB7185',
+                            500: '#F43F5E',
+                            600: '#E11D48',
+                        }
+                    },
+                    boxShadow: {
+                        'neon-emerald': '0 0 25px rgba(16, 185, 129, 0.2)',
+                        'neon-indigo': '0 0 25px rgba(99, 102, 241, 0.2)',
+                        'neon-coral': '0 0 25px rgba(244, 63, 94, 0.2)',
+                        'glass-inset': 'inset 0 1px 0 0 rgba(255, 255, 255, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #05070a;
+            color: #E9EAEB;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Dynamic Glow Drift Animation */
+        @keyframes ambientDrift {
+            0% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+            50% { transform: translate(-40%, -45%) rotate(180deg) scale(1.15); }
+            100% { transform: translate(-50%, -50%) rotate(360deg) scale(1); }
+        }
+
+        .ambient-glow-1 {
+            animation: ambientDrift 28s infinite alternate ease-in-out;
+        }
+        .ambient-glow-2 {
+            animation: ambientDrift 36s infinite alternate-reverse ease-in-out;
+        }
+
+        /* Smooth CSS transitions for page switches */
+        .page-transition {
+            transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .page-hidden {
+            opacity: 0;
+            transform: translateY(16px) scale(0.97);
+            pointer-events: none;
+            display: none !important;
+        }
+
+        .page-active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            display: flex !important;
+        }
+
+        /* Premium Backdrop Glass Effects */
+        .backdrop-glass {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        /* Dynamic Custom Web Scrollbars */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0A0E14;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1C2530;
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #10B981;
+        }
+
+        /* Keyframes for Biometric Scan Ripple */
+        @keyframes pulseRing {
+            0% { transform: scale(0.95); opacity: 0.1; }
+            50% { transform: scale(1.1); opacity: 0.45; }
+            100% { transform: scale(1.2); opacity: 0; }
+        }
+        .pulse-ring-active {
+            animation: pulseRing 2.2s infinite ease-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-emeraldGlow-500 selection:text-obsidian-950">
+
+    <!-- Background Ambient Glow Canvas -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="ambient-glow-1 absolute top-[-15%] left-[25%] -translate-x-1/2 w-[700px] h-[700px] bg-emeraldGlow-500/5 blur-[130px] rounded-full"></div>
+        <div class="ambient-glow-2 absolute bottom-[-15%] right-[15%] w-[600px] h-[600px] bg-velvetIndigo-500/5 blur-[160px] rounded-full"></div>
+    </div>
+
+    <!-- Main Header Area -->
+    <header class="border-b border-obsidian-800/50 sticky top-0 bg-obsidian-950/80 backdrop-glass z-50">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emeraldGlow-600 to-emeraldGlow-400 flex items-center justify-center font-bold text-obsidian-950 shadow-neon-emerald">
+                    μf
+                </div>
+                <div>
+                    <span class="font-extrabold text-xl tracking-tight bg-gradient-to-r from-white to-obsidian-300 bg-clip-text text-transparent">my-fin</span>
+                    <span class="text-[10px] text-emeraldGlow-400 font-mono tracking-widest block -mt-1 uppercase">Financial Operating System</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <!-- Sandbox Sync Status Tag -->
+                <div class="flex items-center gap-2 text-xs font-mono text-obsidian-400 bg-obsidian-900/60 border border-obsidian-800/60 px-3 py-1.5 rounded-full">
+                    <span id="sync-status-dot" class="w-2.5 h-2.5 rounded-full bg-emeraldGlow-500 animate-pulse"></span>
+                    <span id="sync-status-text">ANONYMOUS SECURE WORKSPACE</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Interactive Workspace Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 md:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start z-10">
+        
+        <!-- SIDEBAR CONTROLS (Grid columns 1 to 4) -->
+        <section class="lg:col-span-4 space-y-6 lg:sticky lg:top-24">
+            
+            <!-- Quick Simulator Router -->
+            <div class="bg-obsidian-900/60 border border-obsidian-800/80 rounded-2xl p-5 backdrop-glass shadow-glass-inset space-y-4">
+                <div>
+                    <h2 class="text-xs font-bold text-obsidian-400 font-mono uppercase tracking-widest">Navigation Router</h2>
+                    <p class="text-xs text-obsidian-300 mt-1">Simulate any screen state matching the refined local-first PRD flow instantly.</p>
+                </div>
+
+                <!-- Router Navigation Button Nodes -->
+                <div class="space-y-2">
+                    <div class="text-[10px] font-mono text-obsidian-500 uppercase tracking-widest">Unauthenticated State</div>
+                    <button onclick="routeTo('splash')" id="btn-splash" class="w-full text-left py-2 px-3 rounded-xl text-xs font-semibold border border-emeraldGlow-500/30 bg-emeraldGlow-500/10 text-emeraldGlow-400 transition-all flex items-center justify-between shadow-neon-emerald">
+                        <span>A. Splash Onboarding</span>
+                        <span class="font-mono text-[9px] uppercase">O-1</span>
+                    </button>
+                    <button onclick="routeTo('upgrade')" id="btn-upgrade" class="w-full text-left py-2 px-3 rounded-xl text-xs font-semibold border border-obsidian-800 text-obsidian-300 hover:border-obsidian-700 transition-all flex items-center justify-between">
+                        <span>B. Cloud Sync (Auth Upgrade)</span>
+                        <span class="font-mono text-[9px] uppercase">U-2</span>
+                    </button>
+
+                    <div class="text-[10px] font-mono text-obsidian-500 uppercase tracking-widest pt-2">Operational Workspace</div>
+                    <button onclick="routeTo('dashboard')" id="btn-dashboard" class="w-full text-left py-2 px-3 rounded-xl text-xs font-semibold border border-obsidian-800 text-obsidian-300 hover:border-obsidian-700 transition-all flex items-center justify-between">
+                        <span>1. Dashboard Overview</span>
+                        <span class="font-mono text-[9px] uppercase">D-1</span>
+                    </button>
+                    <button onclick="routeTo('parser')" id="btn-parser" class="w-full text-left py-2 px-3 rounded-xl text-xs font-semibold border border-obsidian-800 text-obsidian-300 hover:border-obsidian-700 transition-all flex items-center justify-between">
+                        <span>2. Smart Regex Parser</span>
+                        <span class="font-mono text-[9px] uppercase">P-2</span>
+                    </button>
+                    <button onclick="routeTo('matrix')" id="btn-matrix" class="w-full text-left py-2 px-3 rounded-xl text-xs font-semibold border border-obsidian-800 text-obsidian-300 hover:border-obsidian-700 transition-all flex items-center justify-between">
+                        <span>3. Reminders & Due Matrix</span>
+                        <span class="font-mono text-[9px] uppercase">M-3</span>
+                    </button>
+                    <button onclick="routeTo('sandbox')" id="btn-sandbox" class="w-full text-left py-2 px-3 rounded-xl text-xs font-semibold border border-obsidian-800 text-obsidian-300 hover:border-obsidian-700 transition-all flex items-center justify-between">
+                        <span>4. Vacation Sandboxing</span>
+                        <span class="font-mono text-[9px] uppercase">V-4</span>
+                    </button>
+                    <button onclick="routeTo('assets')" id="btn-assets" class="w-full text-left py-2 px-3 rounded-xl text-xs font-semibold border border-obsidian-800 text-obsidian-300 hover:border-obsidian-700 transition-all flex items-center justify-between">
+                        <span>5. Net Worth & Investments</span>
+                        <span class="font-mono text-[9px] uppercase">A-5</span>
+                    </button>
+                    <button onclick="routeTo('analytics')" id="btn-analytics" class="w-full text-left py-2 px-3 rounded-xl text-xs font-semibold border border-obsidian-800 text-obsidian-300 hover:border-obsidian-700 transition-all flex items-center justify-between">
+                        <span>6. Skia Visualizations</span>
+                        <span class="font-mono text-[9px] uppercase">S-6</span>
+                    </button>
+                </div>
+
+                <!-- Live Diagnostic Metrics Board -->
+                <div class="pt-4 border-t border-obsidian-800/60 space-y-2">
+                    <span class="text-[10px] font-mono text-obsidian-400 uppercase tracking-widest block">System Memory State</span>
+                    <div class="grid grid-cols-2 gap-2 text-[10px] font-mono">
+                        <div class="bg-obsidian-950 p-2.5 rounded-lg border border-obsidian-850">
+                            <span class="text-obsidian-400 block uppercase text-[8px]">Net Liquidity</span>
+                            <span id="diagnostic-net-liquidity" class="text-white font-bold">₹2,85,250</span>
+                        </div>
+                        <div class="bg-obsidian-950 p-2.5 rounded-lg border border-obsidian-850">
+                            <span class="text-obsidian-400 block uppercase text-[8px]">Absolute Net Worth</span>
+                            <span id="diagnostic-net-worth" class="text-emeraldGlow-400 font-bold">₹15,45,250</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Frame Mode Swapper -->
+            <div class="bg-obsidian-900/60 border border-obsidian-800/80 rounded-2xl p-5 backdrop-glass shadow-glass-inset">
+                <h3 class="text-xs font-bold text-white mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-expand text-emeraldGlow-400"></i>
+                    Display Form Frame
+                </h3>
+                <p class="text-[11px] text-obsidian-300 mb-3">Scale the workspace from standard web limits to structural native mobile container frames.</p>
+                <div class="flex gap-2">
+                    <button onclick="setSimulatedFrame('mobile')" id="frame-mobile" class="flex-1 py-1.5 text-xs font-mono bg-obsidian-800 border border-obsidian-700 rounded text-emeraldGlow-400 font-semibold shadow-inner">Mobile View</button>
+                    <button onclick="setSimulatedFrame('web')" id="frame-web" class="flex-1 py-1.5 text-xs font-mono text-obsidian-400 hover:bg-obsidian-800 hover:border-obsidian-700 rounded border border-transparent">Web Grid</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SIMULATOR SCREEN VIEWPORT (Grid columns 5 to 12) -->
+        <section class="lg:col-span-8 flex justify-center w-full z-10">
+            
+            <!-- Bezel Mobile Simulator Wrap -->
+            <div id="device-shell" class="w-[385px] transition-all duration-500 ease-in-out bg-obsidian-950 border-4 border-obsidian-800/90 rounded-[52px] shadow-2xl relative overflow-hidden flex flex-col h-[790px]">
+                
+                <!-- Slide Down Toast Notification Interface -->
+                <div id="toast-wrapper" class="absolute top-12 left-1/2 -translate-x-1/2 w-[88%] bg-obsidian-900/95 border border-emeraldGlow-500/40 text-white rounded-2xl p-3.5 z-50 flex items-center gap-3 text-xs shadow-neon-emerald backdrop-glass transition-all duration-300 opacity-0 translate-y-[-24px] pointer-events-none">
+                    <div class="w-2.5 h-2.5 rounded-full bg-emeraldGlow-400 animate-ping"></div>
+                    <span id="toast-text" class="font-medium"></span>
+                </div>
+
+                <!-- Simulation Status notch on mobile sizes -->
+                <div id="ios-status-notch" class="absolute top-0 inset-x-0 h-9 bg-obsidian-950 z-40 flex items-center justify-between px-8 text-[11px] font-semibold text-obsidian-300 tracking-wide select-none">
+                    <span>10:31</span>
+                    <div class="w-24 h-4.5 bg-obsidian-950 rounded-full border border-obsidian-900/60 absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
+                        <div class="w-10 h-1 bg-obsidian-900 rounded-full"></div>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-[9px] text-emeraldGlow-400 font-mono font-bold">5G_SEC</span>
+                        <div class="w-5 h-3 border border-obsidian-700 rounded-sm p-0.5 flex items-center">
+                            <div class="w-full h-full bg-emeraldGlow-400 rounded-2xs"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SCREEN PAGE CONTAINERS -->
+                <div class="flex-1 overflow-y-auto bg-obsidian-950 pt-9 pb-16 flex flex-col relative" id="page-host-container">
+                    
+                    <!-- SCREEN A: ONBOARDING / SPLASH SCREEN -->
+                    <div id="page-splash" class="page-transition page-active flex-1 flex flex-col px-6 py-6 justify-between overflow-hidden relative">
+                        <!-- Neon radial blur overlay background -->
+                        <div class="absolute -top-16 -left-16 w-56 h-56 bg-emeraldGlow-500/10 rounded-full blur-3xl"></div>
+                        
+                        <div class="flex flex-col items-center justify-center text-center mt-12 space-y-2">
+                            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emeraldGlow-600 to-emeraldGlow-400 flex items-center justify-center font-bold text-obsidian-950 text-2xl shadow-neon-emerald">
+                                μf
+                            </div>
+                            <h1 class="text-3xl font-extrabold text-white tracking-tight pt-2">my-fin</h1>
+                            <p class="text-[10px] font-mono tracking-widest text-emeraldGlow-400 uppercase font-semibold">Privacy First • Local Only</p>
+                        </div>
+
+                        <!-- Vision statement carousel -->
+                        <div class="space-y-4 my-auto text-center px-2">
+                            <h2 class="text-lg font-bold text-white tracking-tight leading-snug">
+                                No bank scraping.<br>No data brokering.<br>Total clarity.
+                            </h2>
+                            <p class="text-xs text-obsidian-300 leading-relaxed">
+                                Experience an offline-capable, encrypted workspace that models future liquidity limits, tracking assets, EMIs, and shared vacation plans securely.
+                            </p>
+                            
+                            <!-- Key architectural tags -->
+                            <div class="flex flex-wrap justify-center gap-2 pt-3">
+                                <span class="text-[9px] font-mono bg-obsidian-900 border border-obsidian-850 text-obsidian-400 px-2 py-1 rounded">Local SQLCipher</span>
+                                <span class="text-[9px] font-mono bg-obsidian-900 border border-obsidian-850 text-obsidian-400 px-2 py-1 rounded">Offline First</span>
+                                <span class="text-[9px] font-mono bg-obsidian-900 border border-obsidian-850 text-obsidian-400 px-2 py-1 rounded">Postgres Sync</span>
+                            </div>
+                        </div>
+
+                        <!-- Action hooks conforming with Anonymous Onboarding rule -->
+                        <div class="space-y-3 mt-4">
+                            <button onclick="handleAnonymousStart()" class="w-full py-3 bg-emeraldGlow-500 hover:bg-emeraldGlow-400 text-obsidian-950 font-bold text-xs rounded-xl transition shadow-neon-emerald flex items-center justify-center gap-2 group">
+                                <span>Enter Anonymous Local Space</span>
+                                <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                            </button>
+                            <span class="text-[9px] text-obsidian-400 block text-center">By logging in anonymously, you can safely write data fully offline.</span>
+                        </div>
+                    </div>
+
+                    <!-- SCREEN B: CLOUD SYNC UPGRADE (OAUTH SCREEN) -->
+                    <div id="page-upgrade" class="page-transition page-hidden flex-1 flex flex-col px-6 py-6 justify-between">
+                        <div>
+                            <!-- Header Area -->
+                            <div class="flex items-center justify-between mt-4">
+                                <button onclick="routeTo('dashboard')" class="w-8 h-8 rounded-full border border-obsidian-800 flex items-center justify-center text-obsidian-400 hover:text-white transition">
+                                    <i class="fa-solid fa-arrow-left text-xs"></i>
+                                </button>
+                                <span class="text-[10px] font-mono text-obsidian-400 uppercase">PRD Section 6 Sync</span>
+                            </div>
+
+                            <!-- Context explanation -->
+                            <div class="mt-6 space-y-1">
+                                <h2 class="text-xl font-bold text-white">Scale Up to Cloud Sync</h2>
+                                <p class="text-xs text-obsidian-300">Upgrade your anonymous local SQLite storage into a secure, replicated PowerSync instance backed by PostgreSQL.</p>
+                            </div>
+
+                            <!-- OAuth button entries -->
+                            <div class="space-y-3.5 mt-8">
+                                <button onclick="simulateAuthentication('Google OAuth')" class="w-full py-3 bg-white hover:bg-obsidian-100 text-obsidian-950 font-bold text-xs rounded-xl transition flex items-center justify-center gap-3">
+                                    <i class="fa-brands fa-google text-sm"></i>
+                                    <span>Sync with Google Account</span>
+                                </button>
+                                <button onclick="simulateAuthentication('Apple Social Sign-on')" class="w-full py-3 bg-obsidian-900 border border-obsidian-800 hover:bg-obsidian-850 text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-3">
+                                    <i class="fa-brands fa-apple text-sm"></i>
+                                    <span>Sync with Apple Account</span>
+                                </button>
+                            </div>
+
+                            <div class="relative flex py-5 items-center">
+                                <div class="flex-grow border-t border-obsidian-800/80"></div>
+                                <span class="flex-shrink mx-4 text-[9px] font-mono text-obsidian-500 uppercase">Or Local Token Entry</span>
+                                <div class="flex-grow border-t border-obsidian-800/80"></div>
+                            </div>
+
+                            <!-- Traditional login inputs -->
+                            <div class="space-y-3">
+                                <div class="space-y-1">
+                                    <label class="text-[9px] font-mono text-obsidian-400 uppercase tracking-wider block">Workspace Sync Key / Email</label>
+                                    <input type="text" id="sync-email-input" value="sunil.kumar@myfin.dev" class="w-full bg-obsidian-900 border border-obsidian-850 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emeraldGlow-500 font-mono">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[9px] font-mono text-obsidian-400 uppercase tracking-wider block">Passphrase</label>
+                                    <input type="password" value="••••••••••••••••" class="w-full bg-obsidian-900 border border-obsidian-850 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emeraldGlow-500 font-mono">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fingerprint verification simulator representing biometric hooks -->
+                        <div class="my-6 py-4 flex flex-col items-center justify-center border border-obsidian-800/40 bg-obsidian-900/30 rounded-2xl relative overflow-hidden">
+                            <div id="biometric-pulsar" class="absolute w-20 h-20 rounded-full border border-emeraldGlow-500/20 pulse-ring-active"></div>
+                            <button onclick="simulateBiometric()" class="w-12 h-12 rounded-full bg-obsidian-800 border border-obsidian-750 flex items-center justify-center text-emeraldGlow-400 hover:scale-105 transition cursor-pointer z-10 shadow-lg">
+                                <i class="fa-solid fa-fingerprint text-2xl"></i>
+                            </button>
+                            <span class="text-[9px] font-mono text-emeraldGlow-400 mt-2.5 tracking-wider uppercase animate-pulse">Use Biometric Login</span>
+                        </div>
+
+                        <div class="space-y-2">
+                            <button onclick="simulateAuthentication('Email Passphrase')" class="w-full py-2.5 bg-emeraldGlow-500 hover:bg-emeraldGlow-400 text-obsidian-950 font-bold text-xs rounded-xl transition">
+                                Decrypt & Sync Workspace
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- SCREEN 1: CORE DASHBOARD HUB (HOME) -->
+                    <div id="page-dashboard" class="page-transition page-hidden flex-1 flex flex-col px-5 py-4 space-y-5">
+                        
+                        <!-- Account Profiles Summary -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-emeraldGlow-500/10 border border-emeraldGlow-500/20 flex items-center justify-center font-bold text-emeraldGlow-400 text-xs">
+                                    SK
+                                </div>
+                                <div>
+                                    <span class="text-[9px] text-obsidian-400 block font-semibold uppercase">Personal Space</span>
+                                    <span class="text-xs font-bold text-white block -mt-0.5">Sunil Kumar</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <span onclick="routeTo('parser')" class="w-7 h-7 rounded-full bg-obsidian-900 border border-obsidian-800 flex items-center justify-center text-emeraldGlow-400 cursor-pointer hover:border-emeraldGlow-500/30 transition shadow-sm" title="Quick Regex Parser">
+                                    <i class="fa-solid fa-plus text-xs"></i>
+                                </span>
+                                <span onclick="simulateLogout()" class="w-7 h-7 rounded-full bg-obsidian-900 border border-obsidian-800 flex items-center justify-center text-coralWarning-400 cursor-pointer hover:border-coralWarning-500/30 transition shadow-sm" title="Lock Wallet Space">
+                                    <i class="fa-solid fa-lock text-xs"></i>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- NET LIQUIDITY DISPLAY INDEX PANEL (SECTION 11 PRD) -->
+                        <div class="bg-gradient-to-br from-obsidian-900 to-obsidian-850/40 border border-emeraldGlow-500/20 rounded-2xl p-5 relative overflow-hidden shadow-neon-emerald">
+                            <div class="absolute -right-10 -bottom-10 w-28 h-28 bg-emeraldGlow-500/10 rounded-full blur-2xl"></div>
+                            
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-[9px] text-emeraldGlow-400 font-mono tracking-widest uppercase block font-semibold">Net Liquidity (Active 30D)</span>
+                                <span class="text-[8px] bg-emeraldGlow-500/10 text-emeraldGlow-400 px-1.5 py-0.5 rounded uppercase font-mono font-bold tracking-wider">Formula Active</span>
+                            </div>
+                            <span class="text-3xl font-black text-white tracking-tight font-mono" id="val-dashboard-liquidity">₹2,85,250</span>
+                            
+                            <div class="mt-4 pt-3.5 border-t border-obsidian-800/80 grid grid-cols-2 gap-4">
+                                <div class="border-r border-obsidian-800/40">
+                                    <span class="text-[9px] text-obsidian-400 block uppercase font-mono">Liquid Pool</span>
+                                    <span class="text-xs font-bold text-white font-mono" id="val-dashboard-cash">₹3,40,250</span>
+                                </div>
+                                <div>
+                                    <span class="text-[9px] text-obsidian-400 block uppercase font-mono">CC & Due Outflows</span>
+                                    <span class="text-xs font-bold text-coralWarning-500 font-mono" id="val-dashboard-obligations">- ₹55,000</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Asset-Liability Quick Grid metrics -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-obsidian-900 border border-obsidian-850 rounded-xl p-3">
+                                <div class="flex items-center gap-1.5 text-obsidian-400">
+                                    <i class="fa-solid fa-chart-pie text-xs text-emeraldGlow-400"></i>
+                                    <span class="text-[9px] uppercase font-mono font-bold">Investments</span>
+                                </div>
+                                <span class="text-sm font-bold text-white block mt-1 font-mono">₹13,20,000</span>
+                            </div>
+                            <div class="bg-obsidian-900 border border-obsidian-850 rounded-xl p-3">
+                                <div class="flex items-center gap-1.5 text-obsidian-400">
+                                    <i class="fa-solid fa-scale-balanced text-xs text-velvetIndigo-400"></i>
+                                    <span class="text-[9px] uppercase font-mono font-bold font-semibold">Net Worth</span>
+                                </div>
+                                <span class="text-sm font-bold text-velvetIndigo-400 block mt-1 font-mono" id="val-dashboard-networth">₹15,45,250</span>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Budget Burn rate widget bar -->
+                        <div class="bg-obsidian-900 border border-obsidian-850 rounded-xl p-3.5 space-y-2">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-obsidian-400 uppercase font-mono tracking-wider font-semibold">Monthly Spending Ceiling</span>
+                                <span class="text-white font-bold" id="val-dashboard-budget-text">₹24,500 / ₹65,000</span>
+                            </div>
+                            <!-- Dynamic graphical filler track -->
+                            <div class="w-full h-2.5 bg-obsidian-950 rounded-full overflow-hidden border border-obsidian-850">
+                                <div id="val-dashboard-budget-bar" class="h-full bg-gradient-to-r from-emeraldGlow-500 to-velvetIndigo-400 rounded-full transition-all duration-500" style="width: 37.6%"></div>
+                            </div>
+                            <div class="flex justify-between text-[8px] font-mono text-obsidian-400">
+                                <span>37.6% Velocity Paced</span>
+                                <span class="text-emeraldGlow-400">Safe range confirmed</span>
+                            </div>
+                        </div>
+
+                        <!-- Recents ledger listing -->
+                        <div class="space-y-2.5 flex-1 flex flex-col justify-end">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-[10px] font-mono text-obsidian-400 uppercase tracking-widest">Local SQLite Ledger Feed</h3>
+                                <span onclick="routeTo('analytics')" class="text-[9px] text-emeraldGlow-400 cursor-pointer font-medium hover:underline">Full Analytics</span>
+                            </div>
+
+                            <div class="space-y-2" id="transaction-feed-container">
+                                <!-- Populated Reactively via JavaScript state variables -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SCREEN 2: SMART TEXT PARSER (CLIPBOARD MATCHING) -->
+                    <div id="page-parser" class="page-transition page-hidden flex-1 flex flex-col px-5 py-4 space-y-4">
+                        <div>
+                            <span class="text-[9px] text-emeraldGlow-400 font-mono tracking-widest uppercase font-semibold block">PRD Module 10 Ingestion</span>
+                            <h2 class="text-xl font-extrabold text-white tracking-tight">Smart Regex Parser</h2>
+                            <p class="text-xs text-obsidian-300 mt-1">Paste bank alerts, credit card SMS statements, or digital UPI logs below. Data matches occur entirely on-device.</p>
+                        </div>
+
+                        <!-- Clipboard Input Canvas Area -->
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <label class="font-mono text-obsidian-400 uppercase tracking-wider block">Incoming Alert Paste Area</label>
+                                <span onclick="clearParserInput()" class="text-coralWarning-400 cursor-pointer hover:underline">Flush Text</span>
+                            </div>
+                            <textarea id="parser-textarea-input" class="w-full h-24 bg-obsidian-900 border border-obsidian-850 rounded-xl p-3 text-xs text-obsidian-100 font-mono focus:outline-none focus:border-emeraldGlow-500 transition resize-none placeholder-obsidian-500" placeholder="Paste bank confirmation notification text or select a demo alert below..."></textarea>
+                            
+                            <!-- Trigger Demo Selection -->
+                            <div class="flex gap-2">
+                                <button onclick="selectMockPayload('hdfc-cc')" class="flex-1 py-1.5 px-2 text-[9px] bg-obsidian-900 hover:bg-obsidian-850 border border-obsidian-800 text-obsidian-300 rounded-lg font-mono transition">HDFC CC SMS</button>
+                                <button onclick="selectMockPayload('gpay-upi')" class="flex-1 py-1.5 px-2 text-[9px] bg-obsidian-900 hover:bg-obsidian-850 border border-obsidian-800 text-obsidian-300 rounded-lg font-mono transition">UPI alert</button>
+                            </div>
+                        </div>
+
+                        <!-- Live regex parser result diagnostic block -->
+                        <div class="bg-obsidian-900 border border-obsidian-850 rounded-2xl p-4 space-y-3 relative overflow-hidden">
+                            <div class="absolute top-3 right-3">
+                                <span id="val-parser-tag" class="text-[8px] font-mono bg-obsidian-950 text-obsidian-400 px-2 py-0.5 rounded border border-obsidian-800 block uppercase font-bold">Waiting...</span>
+                            </div>
+                            <span class="text-[9px] font-mono text-obsidian-400 uppercase tracking-wider block border-b border-obsidian-800/60 pb-1.5">Local Matching Output</span>
+                            
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <span class="text-[8px] text-obsidian-400 block uppercase font-mono">Parsed Balance</span>
+                                    <span id="val-parser-amount" class="text-base font-extrabold text-white font-mono">₹0.00</span>
+                                </div>
+                                <div>
+                                    <span class="text-[8px] text-obsidian-400 block uppercase font-mono">Mapped Target</span>
+                                    <span id="val-parser-merchant" class="text-xs font-bold text-white uppercase truncate block">NO TARGET</span>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3 pt-1">
+                                <div>
+                                    <span class="text-[8px] text-obsidian-400 block uppercase font-mono">Allocated Account</span>
+                                    <span id="val-parser-account" class="text-xs font-semibold text-obsidian-300 block">Unassigned</span>
+                                </div>
+                                <div>
+                                    <span class="text-[8px] text-obsidian-400 block uppercase font-mono">Target Category</span>
+                                    <span id="val-parser-category" class="text-xs font-semibold text-obsidian-300 block">Shopping</span>
+                                </div>
+                            </div>
+
+                            <!-- Trigger SQLite validation and log update -->
+                            <button onclick="commitParsedEntry()" class="w-full py-2 bg-emeraldGlow-500 text-obsidian-950 font-extrabold text-xs rounded-xl hover:bg-emeraldGlow-400 transition shadow-neon-emerald mt-2.5 flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-square-check text-sm"></i>
+                                <span>Commit Entry to local DB</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- SCREEN 3: REMINDERS & DUE MATRIX (SECTION 12 PRD) -->
+                    <div id="page-matrix" class="page-transition page-hidden flex-1 flex flex-col px-5 py-4 space-y-4">
+                        <div>
+                            <span class="text-[9px] text-coralWarning-400 font-mono tracking-widest uppercase font-semibold block">Section 12 Reminders Matrix</span>
+                            <h2 class="text-xl font-extrabold text-white tracking-tight">Timeline & Dues</h2>
+                            <p class="text-xs text-obsidian-300 mt-1">Track upcoming recharges, credit card billing dates, SIPs, and mutual obligations due inside 30 days.</p>
+                        </div>
+
+                        <!-- Timeline representation grid -->
+                        <div class="relative pl-4 border-l border-obsidian-800/80 space-y-3 flex-1 pt-1.5">
+                            
+                            <!-- SIP Card Node -->
+                            <div class="relative">
+                                <div id="dot-sip" class="absolute -left-[21px] top-1.5 w-2.5 h-2.5 bg-velvetIndigo-500 rounded-full ring-4 ring-obsidian-950 transition-colors"></div>
+                                <div class="bg-obsidian-900 border border-obsidian-850 rounded-xl p-3 flex items-center justify-between">
+                                    <div class="space-y-0.5">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-xs font-bold text-white">Nippon Small Cap SIP</span>
+                                            <span class="text-[8px] font-mono bg-velvetIndigo-500/15 text-velvetIndigo-400 border border-velvetIndigo-500/20 px-1 py-0.2 rounded uppercase font-bold">Invest</span>
+                                        </div>
+                                        <span class="text-[9px] text-obsidian-400 block font-mono">Due in 3 Days (Auto-Debited)</span>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <span class="text-xs font-bold text-white font-mono">₹15,000</span>
+                                        <input type="checkbox" id="due-item-sip" onchange="toggleDueMatrixPayment('sip', 15000)" class="w-4.5 h-4.5 rounded border-obsidian-800 text-emeraldGlow-500 bg-obsidian-950 cursor-pointer">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- HDFC CC Card Node -->
+                            <div class="relative">
+                                <div id="dot-cc" class="absolute -left-[21px] top-1.5 w-2.5 h-2.5 bg-coralWarning-500 rounded-full ring-4 ring-obsidian-950 transition-colors"></div>
+                                <div class="bg-obsidian-900 border border-obsidian-850 rounded-xl p-3 flex items-center justify-between">
+                                    <div class="space-y-0.5">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-xs font-bold text-white">HDFC Regalia CC Due</span>
+                                            <span class="text-[8px] font-mono bg-coralWarning-500/15 text-coralWarning-400 border border-coralWarning-500/20 px-1 py-0.2 rounded uppercase font-bold">Card</span>
+                                        </div>
+                                        <span class="text-[9px] text-obsidian-400 block font-mono">Due in 5 Days (₹40,000 total)</span>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <span class="text-xs font-bold text-white font-mono">₹40,000</span>
+                                        <input type="checkbox" id="due-item-cc" onchange="toggleDueMatrixPayment('cc', 40000)" class="w-4.5 h-4.5 rounded border-obsidian-800 text-emeraldGlow-500 bg-obsidian-950 cursor-pointer">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Peer Outstanding due -->
+                            <div class="relative">
+                                <div id="dot-peer" class="absolute -left-[21px] top-1.5 w-2.5 h-2.5 bg-emeraldGlow-500 rounded-full ring-4 ring-obsidian-950 transition-colors"></div>
+                                <div class="bg-obsidian-900 border border-obsidian-850 rounded-xl p-3 flex items-center justify-between">
+                                    <div class="space-y-0.5">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-xs font-bold text-white">Due from Rohan (Trip Split)</span>
+                                            <span class="text-[8px] font-mono bg-emeraldGlow-500/15 text-emeraldGlow-400 border border-emeraldGlow-500/20 px-1 py-0.2 rounded uppercase font-bold">Owed</span>
+                                        </div>
+                                        <span class="text-[9px] text-obsidian-400 block font-mono">Settlement pending response</span>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <span class="text-xs font-bold text-emeraldGlow-400 font-mono">+ ₹5,400</span>
+                                        <input type="checkbox" id="due-item-peer" onchange="toggleDueMatrixPayment('peer', -5400)" class="w-4.5 h-4.5 rounded border-obsidian-800 text-emeraldGlow-500 bg-obsidian-950 cursor-pointer">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- SCREEN 4: VACATION WORKSPACE (TRIP MODE) -->
+                    <div id="page-sandbox" class="page-transition page-hidden flex-1 flex flex-col px-5 py-4 space-y-4">
+                        
+                        <!-- Header Override Block -->
+                        <div class="bg-gradient-to-r from-velvetIndigo-500/20 to-emeraldGlow-500/10 border border-velvetIndigo-500/30 p-4 rounded-2xl relative overflow-hidden">
+                            <span class="text-[8px] text-velvetIndigo-400 font-mono uppercase tracking-widest block font-bold">Section 23 Sandbox Space</span>
+                            <h3 class="text-lg font-extrabold text-white tracking-tight mt-0.5">Sikkim Summer '26</h3>
+                            <p class="text-[11px] text-obsidian-300 mt-1">Activate Trip Mode below. Ledger writes will automatically tag into this workspace, isolating your household ceiling budget.</p>
+                            
+                            <!-- Master Sandbox Switcher Toggle -->
+                            <div class="mt-4 pt-3.5 border-t border-obsidian-800/40 flex items-center justify-between">
+                                <span class="text-[10px] font-bold text-white block">Active Trip Mode Overwrite:</span>
+                                <button onclick="toggleSandboxTripMode()" id="val-sandbox-toggle" class="px-3 py-1 text-[9px] font-mono rounded bg-obsidian-900 border border-obsidian-800 text-obsidian-400 hover:text-white transition-all uppercase font-bold">Inactive</button>
+                            </div>
+                        </div>
+
+                        <!-- Progress dynamic trackers -->
+                        <div class="space-y-2 bg-obsidian-900 border border-obsidian-850 rounded-2xl p-4">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-obsidian-400 uppercase text-[9px] font-mono font-bold">Allocated Trip Wallet</span>
+                                <span class="font-mono font-bold text-white">₹38,200 / ₹80,000</span>
+                            </div>
+                            
+                            <!-- Linear progress filler graphics -->
+                            <div class="w-full h-3 bg-obsidian-950 rounded-full overflow-hidden border border-obsidian-850 relative">
+                                <div class="h-full bg-gradient-to-r from-velvetIndigo-500 to-emeraldGlow-400 rounded-full transition-all duration-500" style="width: 47.7%"></div>
+                            </div>
+                            
+                            <div class="flex justify-between text-[9px] font-mono text-obsidian-400">
+                                <span>47.7% Allocated</span>
+                                <span>₹41,800 Remaining</span>
+                            </div>
+                        </div>
+
+                        <!-- Offline currency converter module -->
+                        <div class="bg-obsidian-900 border border-obsidian-850 rounded-2xl p-4 space-y-3">
+                            <h4 class="text-xs font-bold text-white">Offline Currency Converter</h4>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="text-[8px] font-mono text-obsidian-400 uppercase tracking-wider block mb-1">Input USD ($)</label>
+                                    <input type="number" id="val-sandbox-usd" value="150" oninput="runLocalCurrencyMatch()" class="w-full bg-obsidian-950 border border-obsidian-800 rounded-lg px-2.5 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-velvetIndigo-500">
+                                </div>
+                                <div>
+                                    <label class="text-[8px] font-mono text-obsidian-400 uppercase tracking-wider block mb-1">Estimated INR (₹)</label>
+                                    <input type="text" id="val-sandbox-inr" value="₹12,450.00" readonly class="w-full bg-obsidian-900 border border-obsidian-800 rounded-lg px-2.5 py-1.5 text-xs text-emeraldGlow-400 font-bold font-mono">
+                                </div>
+                            </div>
+                            <span class="text-[8px] text-obsidian-500 font-mono block">Using system-cached parameters ($1 USD = ₹83.00 INR) valid offline.</span>
+                        </div>
+                    </div>
+
+                    <!-- SCREEN 5: NET WORTH & PORTFOLIO TRACKER (SECTION 13 PRD) -->
+                    <div id="page-assets" class="page-transition page-hidden flex-1 flex flex-col px-5 py-4 space-y-4">
+                        <div>
+                            <span class="text-[9px] text-velvetIndigo-400 font-mono tracking-widest uppercase font-semibold block">Sections 17-19 Core Ledger</span>
+                            <h2 class="text-xl font-extrabold text-white tracking-tight">Investments & Assets</h2>
+                            <p class="text-xs text-obsidian-300 mt-1">Differentiate fluid liquid cash balances from structural net worth assets like stocks, mutual funds, or gold.</p>
+                        </div>
+
+                        <!-- Multi-tier structural net worth overview -->
+                        <div class="bg-gradient-to-br from-obsidian-900 to-obsidian-850/60 border border-velvetIndigo-500/20 p-4.5 rounded-2xl space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[8px] font-mono text-velvetIndigo-400 uppercase tracking-wider block font-bold">Absolute Net Worth Index</span>
+                                <span class="text-[8px] bg-velvetIndigo-500/10 text-velvetIndigo-400 px-1.5 py-0.5 rounded uppercase font-mono font-bold tracking-wider">Equation Balanced</span>
+                            </div>
+                            
+                            <span class="text-2xl font-black text-white font-mono block" id="val-assets-networth">₹15,45,250</span>
+
+                            <div class="grid grid-cols-2 gap-4 border-t border-obsidian-800/80 pt-3 text-xs font-mono">
+                                <div class="border-r border-obsidian-800/40">
+                                    <span class="text-obsidian-400 block text-[8px] uppercase">Aggregate Assets</span>
+                                    <span class="text-emeraldGlow-400 font-bold">₹16,60,250</span>
+                                </div>
+                                <div>
+                                    <span class="text-obsidian-400 block text-[8px] uppercase">Aggregate Liabilities</span>
+                                    <span class="text-coralWarning-400 font-bold" id="val-assets-liabilities">₹1,15,000</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- List Asset allocations -->
+                        <div class="space-y-2">
+                            <span class="text-[9px] font-mono text-obsidian-400 uppercase tracking-wider block">Illiquid Asset Base Allocations</span>
+                            
+                            <!-- Stocks tracker -->
+                            <div class="bg-obsidian-900 border border-obsidian-850/60 rounded-xl p-3 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-7 h-7 rounded bg-obsidian-950 flex items-center justify-center text-xs">📈</div>
+                                    <div>
+                                        <span class="text-xs font-bold text-white block">Mutual Funds & Equity</span>
+                                        <span class="text-[8px] font-mono text-obsidian-400 uppercase font-semibold">SIP Linked</span>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-bold text-white font-mono">₹11,50,000</span>
+                            </div>
+
+                            <!-- PPF Tracker -->
+                            <div class="bg-obsidian-900 border border-obsidian-850/60 rounded-xl p-3 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-7 h-7 rounded bg-obsidian-950 flex items-center justify-center text-xs">🏦</div>
+                                    <div>
+                                        <span class="text-xs font-bold text-white block">Public Provident Fund</span>
+                                        <span class="text-[8px] font-mono text-obsidian-400 uppercase font-semibold">Long-Term Safe</span>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-bold text-white font-mono">₹1,70,000</span>
+                            </div>
+
+                            <!-- Gold allocations -->
+                            <div class="bg-obsidian-900 border border-obsidian-850/60 rounded-xl p-3 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-7 h-7 rounded bg-obsidian-950 flex items-center justify-center text-xs">🪙</div>
+                                    <div>
+                                        <span class="text-xs font-bold text-white block">Digital Gold Reserves</span>
+                                        <span class="text-[8px] font-mono text-obsidian-400 uppercase font-semibold">Safe Haven Store</span>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-bold text-white font-mono">₹55,000</span>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- SCREEN 6: HARWDARE-ACCELERATED STYLE VISUALIZATIONS (SKIA SIMULATED) -->
+                    <div id="page-analytics" class="page-transition page-hidden flex-1 flex flex-col px-5 py-4 space-y-4">
+                        <div>
+                            <span class="text-[9px] text-velvetIndigo-400 font-mono tracking-widest uppercase font-semibold block">Section 17 Custom Skia Drawing</span>
+                            <h2 class="text-xl font-extrabold text-white tracking-tight">Visual Canvas</h2>
+                            <p class="text-xs text-obsidian-300 mt-1">High-performance canvas rendering detailing daily burn dynamics and categorical distributions.</p>
+                        </div>
+
+                        <!-- Interactive category breakdown donuty segment card -->
+                        <div class="bg-obsidian-900 border border-obsidian-850 rounded-2xl p-4 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-white">Categorical Outflow Matrix</span>
+                                <span class="text-[10px] font-mono text-emeraldGlow-400" id="val-analytics-spent">Total Outflow: ₹24,500</span>
+                            </div>
+
+                            <!-- Bar Graph Segments -->
+                            <div class="space-y-3 pt-2">
+                                
+                                <div class="space-y-1">
+                                    <div class="flex justify-between text-[10px] font-mono">
+                                        <span class="text-white">🍔 Food & Lifestyle (Swiggy / Dining)</span>
+                                        <span class="text-obsidian-300 font-bold" id="val-analytics-food-text">57% • ₹14,000</span>
+                                    </div>
+                                    <div class="w-full h-2 bg-obsidian-950 rounded-full overflow-hidden">
+                                        <div id="val-analytics-food-bar" class="h-full bg-emeraldGlow-500" style="width: 57%"></div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-1">
+                                    <div class="flex justify-between text-[10px] font-mono">
+                                        <span class="text-white">✈️ Vacation Bucket (Transit / Sikkim)</span>
+                                        <span class="text-obsidian-300 font-bold">34% • ₹8,450</span>
+                                    </div>
+                                    <div class="w-full h-2 bg-obsidian-950 rounded-full overflow-hidden">
+                                        <div class="h-full bg-velvetIndigo-500" style="width: 34%"></div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-1">
+                                    <div class="flex justify-between text-[10px] font-mono">
+                                        <span class="text-white">🛒 Utilities & Recurring (Subscriptions)</span>
+                                        <span class="text-obsidian-300 font-bold" id="val-analytics-utils-text font-semibold">9% • ₹2,050</span>
+                                    </div>
+                                    <div class="w-full h-2 bg-obsidian-950 rounded-full overflow-hidden">
+                                        <div id="val-analytics-utils-bar" class="h-full bg-coralWarning-500" style="width: 9%"></div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Consumption speed indicator representing burn rate gauge -->
+                        <div class="bg-obsidian-900 border border-obsidian-850 rounded-2xl p-4 flex items-center justify-between">
+                            <div class="space-y-1">
+                                <span class="text-xs font-bold text-white block">Burn-Rate Speedometer</span>
+                                <p class="text-[10px] text-obsidian-300 max-w-[200px]">Analyzes average consumption speeds against active limits to verify safe margins.</p>
+                            </div>
+                            <div class="relative w-16 h-16 flex items-center justify-center">
+                                <svg class="w-full h-full transform -rotate-90">
+                                    <circle cx="32" cy="32" r="26" stroke="#111821" stroke-width="6" fill="transparent" />
+                                    <circle id="val-analytics-gauge" cx="32" cy="32" r="26" stroke="#10B981" stroke-width="6" stroke-dasharray="163" stroke-dashoffset="61" fill="transparent" stroke-linecap="round" class="transition-all duration-700" />
+                                </svg>
+                                <span class="absolute text-[10px] font-mono font-bold text-white" id="val-analytics-gauge-text">Paced</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- iOS Native App Tab Bar Navigation -->
+                <div id="app-tab-navigation" class="absolute bottom-0 inset-x-0 h-16 bg-obsidian-950/95 border-t border-obsidian-900 z-40 flex items-center justify-around px-4 select-none">
+                    <button onclick="routeTo('dashboard')" id="nav-dashboard" class="flex flex-col items-center gap-0.5 text-emeraldGlow-500 transition-all">
+                        <i class="fa-solid fa-house text-sm"></i>
+                        <span class="text-[8px] font-semibold tracking-tight font-sans">Overview</span>
+                    </button>
+                    <button onclick="routeTo('parser')" id="nav-parser" class="flex flex-col items-center gap-0.5 text-obsidian-400 hover:text-white transition-all">
+                        <i class="fa-solid fa-terminal text-sm"></i>
+                        <span class="text-[8px] font-semibold tracking-tight font-sans">Regex Parse</span>
+                    </button>
+                    <button onclick="routeTo('matrix')" id="nav-matrix" class="flex flex-col items-center gap-0.5 text-obsidian-400 hover:text-white transition-all">
+                        <i class="fa-solid fa-calendar-days text-sm"></i>
+                        <span class="text-[8px] font-semibold tracking-tight font-sans">Matrix Dues</span>
+                    </button>
+                    <button onclick="routeTo('sandbox')" id="nav-sandbox" class="flex flex-col items-center gap-0.5 text-obsidian-400 hover:text-white transition-all">
+                        <i class="fa-solid fa-umbrella-beach text-sm"></i>
+                        <span class="text-[8px] font-semibold tracking-tight font-sans">Sikkim</span>
+                    </button>
+                    <button onclick="routeTo('assets')" id="nav-assets" class="flex flex-col items-center gap-0.5 text-obsidian-400 hover:text-white transition-all">
+                        <i class="fa-solid fa-wallet text-sm"></i>
+                        <span class="text-[8px] font-semibold tracking-tight font-sans">Portfolio</span>
+                    </button>
+                </div>
+
+                <!-- Bottom iOS bezel bar handle overlay -->
+                <div id="ios-handle-overlay" class="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-32 h-1 bg-obsidian-800 rounded-full z-50"></div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Project Specifications Footing -->
+    <footer class="border-t border-obsidian-800/60 bg-obsidian-950 py-8 mt-12 z-10 relative">
+        <div class="max-w-7xl mx-auto px-6 text-center space-y-3">
+            <p class="text-xs text-obsidian-400">
+                Aesthetic interactive flow blueprint built for the refined <span class="text-white font-semibold">my-fin</span> OS roadmap.
+            </p>
+            <div class="flex flex-wrap justify-center gap-4 text-[10px] font-mono text-obsidian-500">
+                <span>Targets: Standard iOS & Android Client Core Native Modules</span>
+                <span>•</span>
+                <span>Offline Sync: Client SQLite (SQLCipher) mapping to Cloud PostgreSQL via PowerSync Service</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- CORE SCRIPT LOGIC ENGINE -->
+    <script>
+        // Synchronized Application Memory State
+        const appState = {
+            activePage: 'splash',
+            isSynchronized: false,
+            
+            // Baseline Calculations (Conforming with formula in PRD)
+            totalLiquidCash: 340250.00,
+            activeObligations: 55000.00, // Nippon SIP (15,000) + HDFC Card (40,000)
+            illiquidInvestments: 1320000.00, // stocks (11.5L) + PPF (1.7L)
+            
+            // Goals & Budget Velocity limits
+            spendingCeiling: 65000.00,
+            currentMonthSpends: 24500.00,
+            
+            // Sandboxed Vacation overrides
+            tripModeActive: false,
+            tripSpentAllocated: 38200.00,
+            tripMaxBudget: 80000.00,
+
+            // Local checklist items tracking for the timeline
+            outstandingDues: {
+                sip: { checked: false, value: 15000 },
+                cc: { checked: false, value: 40000 },
+                peer: { checked: false, value: -5400 }
+            },
+
+            // In-Memory SQLite simulated ledger transactions feed
+            transactions: [
+                { id: 'tx_01', title: 'Blue Tokai Coffee Craft', type: 'Expense', desc: 'HDFC CC • Food & Lifestyle', amount: 280, icon: '☕', status: 'local_sqlite' },
+                { id: 'tx_02', title: 'Consulting Retainer Credit', type: 'Income', desc: 'HDFC Bank • Income Stream', amount: 85000, icon: '💼', status: 'synced_postgres' },
+                { id: 'tx_03', title: 'Swiggy Dinner Delivery', type: 'Expense', desc: 'Paytm Wallet • Food & Lifestyle', amount: 1450, icon: '🍔', status: 'synced_postgres' }
+            ]
+        };
+
+        // Complete List of Supported View IDs
+        const viewRouteList = ['splash', 'upgrade', 'dashboard', 'parser', 'matrix', 'sandbox', 'assets', 'analytics'];
+
+        function routeTo(targetPage) {
+            // Screen-specific routing validations
+            if (!appState.isSynchronized && !['splash', 'upgrade'].includes(targetPage)) {
+                triggerToastAlert("Aesthetic Authentication Gated. Decrypting anonymous local space.", "indigo");
+                routeTo('splash');
+                return;
+            }
+
+            // Slide and fade page containers
+            viewRouteList.forEach(page => {
+                const pageEl = document.getElementById(`page-${page}`);
+                if (pageEl) {
+                    if (page === targetPage) {
+                        pageEl.classList.remove('page-hidden');
+                        pageEl.classList.add('page-active');
+                    } else {
+                        pageEl.classList.remove('page-active');
+                        pageEl.classList.add('page-hidden');
+                    }
+                }
+
+                // Deselect companion developer sidebar controls
+                const ctrlBtn = document.getElementById(`btn-${page}`);
+                if (ctrlBtn) {
+                    ctrlBtn.className = "w-full text-left py-2 px-3 rounded-xl text-xs font-semibold border border-obsidian-800 text-obsidian-300 hover:border-obsidian-700 transition-all flex items-center justify-between";
+                }
+
+                // Deselect container navigation tab paths
+                const navBtn = document.getElementById(`nav-${page}`);
+                if (navBtn) {
+                    navBtn.className = "flex flex-col items-center gap-0.5 text-obsidian-400 hover:text-white transition-all";
+                }
+            });
+
+            // Highlight router panel button
+            const activeSidebarBtn = document.getElementById(`btn-${targetPage}`);
+            if (activeSidebarBtn) {
+                activeSidebarBtn.className = "w-full text-left py-2 px-3 rounded-xl text-xs font-semibold border border-emeraldGlow-500/30 bg-emeraldGlow-500/10 text-emeraldGlow-400 transition-all flex items-center justify-between shadow-neon-emerald";
+            }
+
+            // Highlight tab navigation menu item
+            const activeNavBtn = document.getElementById(`nav-${targetPage}`);
+            if (activeNavBtn) {
+                activeNavBtn.className = "flex flex-col items-center gap-0.5 text-emeraldGlow-500 transition-all";
+            }
+
+            appState.activePage = targetPage;
+        }
+
+        // Upgrade and transition client frames safely between viewport formats
+        function setSimulatedFrame(size) {
+            const shell = document.getElementById('device-shell');
+            const statusNotch = document.getElementById('ios-status-notch');
+            const bottomHandle = document.getElementById('ios-handle-overlay');
+            const phoneBtn = document.getElementById('frame-mobile');
+            const webBtn = document.getElementById('frame-web');
+
+            if (size === 'web') {
+                shell.className = "w-full transition-all duration-500 ease-in-out bg-obsidian-950 border border-obsidian-800 rounded-2xl shadow-2xl relative overflow-hidden flex flex-col h-[660px]";
+                statusNotch.classList.add('hidden');
+                bottomHandle.classList.add('hidden');
+                phoneBtn.className = "flex-1 py-1.5 text-xs font-mono text-obsidian-400 hover:bg-obsidian-800 hover:border-obsidian-700 rounded border border-transparent";
+                webBtn.className = "flex-1 py-1.5 text-xs font-mono bg-obsidian-800 border border-obsidian-700 rounded text-emeraldGlow-400 font-semibold shadow-inner";
+            } else {
+                shell.className = "w-[385px] transition-all duration-500 ease-in-out bg-obsidian-950 border-4 border-obsidian-800/90 rounded-[52px] shadow-2xl relative overflow-hidden flex flex-col h-[790px]";
+                statusNotch.classList.remove('hidden');
+                bottomHandle.classList.remove('hidden');
+                phoneBtn.className = "flex-1 py-1.5 text-xs font-mono bg-obsidian-800 border border-obsidian-700 rounded text-emeraldGlow-400 font-semibold shadow-inner";
+                webBtn.className = "flex-1 py-1.5 text-xs font-mono text-obsidian-400 hover:bg-obsidian-800 hover:border-obsidian-700 rounded border border-transparent";
+            }
+        }
+
+        // Decrypt and open Anonymous space trigger (Frictionless Onboarding rule)
+        function handleAnonymousStart() {
+            triggerToastAlert("Launching Encrypted Local SQLite Sandbox...", "emerald");
+            
+            setTimeout(() => {
+                appState.isSynchronized = true;
+                routeTo('dashboard');
+                rebuildSQLiteLedgerDOM();
+                recomputeAllFinancialAggregations();
+            }, 800);
+        }
+
+        // Upgrading to Cloud syncing hooks
+        function simulateAuthentication(provider) {
+            triggerToastAlert(`Connecting PowerSync to remote PostgreSQL via ${provider}...`, "indigo");
+            
+            setTimeout(() => {
+                const indicatorDot = document.getElementById('sync-status-dot');
+                const indicatorText = document.getElementById('sync-status-text');
+                
+                indicatorDot.className = "w-2.5 h-2.5 rounded-full bg-emeraldGlow-500 animate-ping";
+                indicatorText.innerText = "POSTGRES SECURE CLOUD SYNCED";
+                
+                triggerToastAlert("Database Handshake Complete. Records Replicated!", "emerald");
+                routeTo('dashboard');
+            }, 1200);
+        }
+
+        // Simulate Biometric Handshake Verification
+        function simulateBiometric() {
+            triggerToastAlert("Verifying Biometric Hash...", "indigo");
+            const keyLock = document.getElementById('biometric-pulsar');
+            
+            setTimeout(() => {
+                simulateAuthentication("Native Biometrics");
+            }, 1000);
+        }
+
+        function simulateLogout() {
+            appState.isSynchronized = false;
+            const indicatorDot = document.getElementById('sync-status-dot');
+            const indicatorText = document.getElementById('sync-status-text');
+            
+            indicatorDot.className = "w-2.5 h-2.5 rounded-full bg-coralWarning-500 animate-pulse";
+            indicatorText.innerText = "OFFLINE VAULT CLOSED";
+            
+            triggerToastAlert("Flushed session decryption keys from memory.", "coral");
+            routeTo('splash');
+        }
+
+        function toggleDueMatrixPayment(id, obligationValue) {
+            const checkBox = document.getElementById(`due-item-${id}`);
+            const nodeDot = document.getElementById(`dot-${id}`);
+            
+            if (checkBox.checked) {
+                // Settle obligations
+                appState.totalLiquidCash -= obligationValue;
+                appState.activeObligations -= obligationValue;
+                appState.outstandingDues[id].checked = true;
+                
+                // Track visual balance check transition
+                nodeDot.className = "absolute -left-[21px] top-1.5 w-2.5 h-2.5 bg-obsidian-800 rounded-full ring-4 ring-obsidian-950 transition-colors";
+                triggerToastAlert(`Settled ₹${Math.abs(obligationValue).toLocaleString()} commitment. Liquidity metrics updated.`, "emerald");
+            } else {
+                // Return to pending state
+                appState.totalLiquidCash += obligationValue;
+                appState.activeObligations += obligationValue;
+                appState.outstandingDues[id].checked = false;
+                
+                let restoredColor = "bg-velvetIndigo-500";
+                if (id === 'cc') restoredColor = "bg-coralWarning-500";
+                if (id === 'peer') restoredColor = "bg-emeraldGlow-500";
+                
+                nodeDot.className = `absolute -left-[21px] top-1.5 w-2.5 h-2.5 ${restoredColor} rounded-full ring-4 ring-obsidian-950 transition-colors`;
+            }
+            
+            recomputeAllFinancialAggregations();
+        }
+
+        // Local regex alerts mappings database (PRD Section 10.1)
+        const mockAlertStrings = {
+            'hdfc-cc': "HDFC Bank Alert: Spent INR 4,500.00 on Credit Card ending xx1921 at AMAZON INDIA STORE on 30-05-2026. Limit tracking active.",
+            'gpay-upi': "UPI Confirmation: Paid INR 650.00 to SWIGGY LIFESTYLE from Bank Account xx882. Ref No: 8294829."
+        };
+
+        function selectMockPayload(alertKey) {
+            const alertTextarea = document.getElementById('parser-textarea-input');
+            alertTextarea.value = mockAlertStrings[alertKey];
+            
+            // Render parsing latency inside result layout
+            document.getElementById('val-parser-amount').innerText = "Matching...";
+            document.getElementById('val-parser-merchant').innerText = "Running Regex...";
+            
+            setTimeout(() => {
+                if (alertKey === 'hdfc-cc') {
+                    document.getElementById('val-parser-amount').innerText = "₹4,500.00";
+                    document.getElementById('val-parser-merchant').innerText = "AMAZON INDIA STORE";
+                    document.getElementById('val-parser-account').innerText = "HDFC Credit Card";
+                    document.getElementById('val-parser-category').innerText = "Shopping";
+                    document.getElementById('val-parser-tag').innerText = "CC Match";
+                    document.getElementById('val-parser-tag').className = "text-[8px] font-mono bg-coralWarning-500/10 text-coralWarning-400 px-2 py-0.5 rounded border border-coralWarning-500/20 block uppercase font-bold";
+                } else {
+                    document.getElementById('val-parser-amount').innerText = "₹650.00";
+                    document.getElementById('val-parser-merchant').innerText = "SWIGGY LIFESTYLE";
+                    document.getElementById('val-parser-account').innerText = "HDFC Savings Bank";
+                    document.getElementById('val-parser-category').innerText = "Food & Lifestyle";
+                    document.getElementById('val-parser-tag').innerText = "UPI Match";
+                    document.getElementById('val-parser-tag').className = "text-[8px] font-mono bg-emeraldGlow-500/10 text-emeraldGlow-400 px-2 py-0.5 rounded border border-emeraldGlow-500/20 block uppercase font-bold";
+                }
+                triggerToastAlert("On-Device Regex extraction successful!", "emerald");
+            }, 600);
+        }
+
+        function clearParserInput() {
+            document.getElementById('parser-textarea-input').value = "";
+            document.getElementById('val-parser-amount').innerText = "₹0.00";
+            document.getElementById('val-parser-merchant').innerText = "NO TARGET";
+            document.getElementById('val-parser-account').innerText = "Unassigned";
+            document.getElementById('val-parser-category').innerText = "Shopping";
+            document.getElementById('val-parser-tag').innerText = "Waiting...";
+            document.getElementById('val-parser-tag').className = "text-[8px] font-mono bg-obsidian-950 text-obsidian-400 px-2 py-0.5 rounded border border-obsidian-800 block uppercase font-bold";
+        }
+
+        function commitParsedEntry() {
+            const amountValStr = document.getElementById('val-parser-amount').innerText;
+            const merchantValStr = document.getElementById('val-parser-merchant').innerText;
+            const catValStr = document.getElementById('val-parser-category').innerText;
+            
+            if (merchantValStr === "NO TARGET" || amountValStr === "₹0.00") {
+                triggerToastAlert("No extracted parameters found. Paste a payload first.", "coral");
+                return;
+            }
+
+            const parsedAbsoluteValue = parseFloat(amountValStr.replace(/[^0-9.-]+/g,""));
+            
+            // Build single ledger entry schema conforming with PRD Module 11
+            const customLedgerRecord = {
+                id: 'tx_parsed_' + Date.now(),
+                title: merchantValStr,
+                type: 'Expense',
+                desc: `Parsed Outflow • ${catValStr}`,
+                amount: parsedAbsoluteValue,
+                icon: '⚡',
+                status: 'local_sqlite'
+            };
+
+            // Inject into active database streams
+            appState.transactions.unshift(customLedgerRecord);
+            appState.totalLiquidCash -= parsedAbsoluteValue;
+            appState.currentMonthSpends += parsedAbsoluteValue;
+
+            // Rebuild & Recalculate
+            rebuildSQLiteLedgerDOM();
+            recomputeAllFinancialAggregations();
+            triggerToastAlert("Successfully committed record to SQLCipher Local DB!", "emerald");
+
+            setTimeout(() => {
+                routeTo('dashboard');
+                clearParserInput();
+            }, 750);
+        }
+
+        function toggleSandboxTripMode() {
+            appState.tripModeActive = !appState.tripModeActive;
+            const buttonIndicator = document.getElementById('val-sandbox-toggle');
+            
+            if (appState.tripModeActive) {
+                buttonIndicator.className = "px-3 py-1 text-[9px] font-mono rounded bg-emeraldGlow-500 border border-emeraldGlow-600 text-obsidian-950 transition-all uppercase font-bold shadow-neon-emerald";
+                buttonIndicator.innerText = "Active";
+                triggerToastAlert("Trip Mode Override Enabled. Main budget calculations isolated.", "indigo");
+            } else {
+                buttonIndicator.className = "px-3 py-1 text-[9px] font-mono rounded bg-obsidian-900 border border-obsidian-800 text-obsidian-400 hover:text-white transition-all uppercase font-bold";
+                buttonIndicator.innerText = "Inactive";
+                triggerToastAlert("Deactivated Sandbox override. Returned to personal account streams.", "emerald");
+            }
+        }
+
+        function runLocalCurrencyMatch() {
+            const inputValUSD = document.getElementById('val-sandbox-usd').value;
+            const resultInrField = document.getElementById('val-sandbox-inr');
+            
+            if (inputValUSD) {
+                const matchingCalculation = inputValUSD * 83;
+                resultInrField.value = "₹" + matchingCalculation.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            } else {
+                resultInrField.value = "₹0.00";
+            }
+        }
+
+        function rebuildSQLiteLedgerDOM() {
+            const feedContainer = document.getElementById('transaction-feed-container');
+            feedContainer.innerHTML = "";
+            
+            appState.transactions.forEach(tx => {
+                const transactionCard = document.createElement('div');
+                transactionCard.className = "flex items-center justify-between bg-obsidian-900/50 p-3 rounded-xl border border-obsidian-850/60 hover:border-obsidian-800 transition duration-150";
+                
+                const isNegative = tx.type === 'Expense';
+                const operatorSign = isNegative ? "-" : "+";
+                const displayAmount = Math.abs(tx.amount).toLocaleString();
+                const textMetricColor = isNegative ? "text-white" : "text-emeraldGlow-400";
+                
+                // Synced indicator icon selection
+                const syncTagIcon = tx.status === 'synced_postgres' 
+                    ? `<i class="fa-solid fa-cloud-arrow-up text-[9px] text-emeraldGlow-400" title="Synced with Cloud"></i>`
+                    : `<i class="fa-solid fa-hard-drive text-[9px] text-obsidian-500" title="Stored Locally Secure"></i>`;
+                
+                transactionCard.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-obsidian-950 border border-obsidian-850 flex items-center justify-center text-sm shadow-inner">${tx.icon}</div>
+                        <div>
+                            <span class="text-xs font-bold text-white block leading-tight truncate max-w-[170px]">${tx.title}</span>
+                            <span class="text-[8px] text-obsidian-400 font-mono uppercase tracking-widest block mt-0.5">${tx.desc}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold font-mono ${textMetricColor}">${operatorSign} ₹${displayAmount}</span>
+                        ${syncTagIcon}
+                    </div>
+                `;
+                
+                feedContainer.appendChild(transactionCard);
+            });
+        }
+
+        function recomputeAllFinancialAggregations() {
+            // Net Liquidity Equation calculation: Cash - Obligations
+            const activeNetLiquidity = appState.totalLiquidCash - appState.activeObligations;
+            
+            // Net Worth Equation calculation: (Cash + Investments) - CC Obligations
+            const absoluteNetWorth = (appState.totalLiquidCash + appState.illiquidInvestments) - appState.activeObligations;
+
+            // Render calculations inside the components
+            document.getElementById('val-dashboard-liquidity').innerText = "₹" + activeNetLiquidity.toLocaleString(undefined, {minimumFractionDigits: 0});
+            document.getElementById('val-dashboard-cash').innerText = "₹" + appState.totalLiquidCash.toLocaleString(undefined, {minimumFractionDigits: 0});
+            document.getElementById('val-dashboard-obligations').innerText = "- ₹" + appState.activeObligations.toLocaleString(undefined, {minimumFractionDigits: 0});
+            document.getElementById('val-dashboard-networth').innerText = "₹" + absoluteNetWorth.toLocaleString(undefined, {minimumFractionDigits: 0});
+            
+            // Match diagnostic values in sidebar
+            document.getElementById('diagnostic-net-liquidity').innerText = "₹" + activeNetLiquidity.toLocaleString(undefined, {minimumFractionDigits: 0});
+            document.getElementById('diagnostic-net-worth').innerText = "₹" + absoluteNetWorth.toLocaleString(undefined, {minimumFractionDigits: 0});
+
+            // Match net worth metrics inside portfolio cards
+            const assetLiabilitiesEl = document.getElementById('val-assets-liabilities');
+            if (assetLiabilitiesEl) {
+                assetLiabilitiesEl.innerText = "₹" + appState.activeObligations.toLocaleString(undefined, {minimumFractionDigits: 0});
+            }
+            const assetsNetworthEl = document.getElementById('val-assets-networth');
+            if (assetsNetworthEl) {
+                assetsNetworthEl.innerText = "₹" + absoluteNetWorth.toLocaleString(undefined, {minimumFractionDigits: 0});
+            }
+
+            // Update spending velocity indicators
+            const budgetProgressBar = document.getElementById('val-dashboard-budget-bar');
+            const budgetProgressText = document.getElementById('val-dashboard-budget-text');
+            const budgetPercentageValue = (appState.currentMonthSpends / appState.spendingCeiling) * 100;
+            
+            if (budgetProgressBar && budgetProgressText) {
+                budgetProgressBar.style.width = `${Math.min(budgetPercentageValue, 100)}%`;
+                budgetProgressText.innerText = `₹${appState.currentMonthSpends.toLocaleString()} / ₹${appState.spendingCeiling.toLocaleString()}`;
+            }
+
+            // Sync visual analytics indicators
+            const totalOutflowsText = document.getElementById('val-analytics-spent');
+            if (totalOutflowsText) {
+                totalOutflowsText.innerText = `Total Outflow: ₹${appState.currentMonthSpends.toLocaleString()}`;
+            }
+
+            // Align sub-allocations in graphs dynamically based on actual food logs
+            const foodAllocBar = document.getElementById('val-analytics-food-bar');
+            const foodAllocText = document.getElementById('val-analytics-food-text');
+            if (foodAllocBar && foodAllocText) {
+                const foodSpentVal = appState.transactions.filter(t => t.desc.includes('Food')).reduce((sum, t) => sum + t.amount, 0);
+                const foodPercentVal = (foodSpentVal / appState.currentMonthSpends) * 100;
+                
+                foodAllocBar.style.width = `${Math.min(foodPercentVal, 100)}%`;
+                foodAllocText.innerText = `${Math.round(foodPercentVal)}% • ₹${foodSpentVal.toLocaleString()}`;
+            }
+
+            // Adjust consumption gauge metrics
+            const gaugeCircle = document.getElementById('val-analytics-gauge');
+            const gaugeLabel = document.getElementById('val-analytics-gauge-text');
+            if (gaugeCircle && gaugeLabel) {
+                if (budgetPercentageValue < 50) {
+                    gaugeCircle.setAttribute('stroke-dashoffset', '61'); // High safe green
+                    gaugeCircle.setAttribute('stroke', '#10B981');
+                    gaugeLabel.innerText = "Paced";
+                    gaugeLabel.className = "absolute text-[10px] font-mono font-bold text-emeraldGlow-400";
+                } else if (budgetPercentageValue < 80) {
+                    gaugeCircle.setAttribute('stroke-dashoffset', '110'); // Warning amber
+                    gaugeCircle.setAttribute('stroke', '#6366F1');
+                    gaugeLabel.innerText = "Moderate";
+                    gaugeLabel.className = "absolute text-[10px] font-mono font-bold text-velvetIndigo-400";
+                } else {
+                    gaugeCircle.setAttribute('stroke-dashoffset', '150'); // High warn red
+                    gaugeCircle.setAttribute('stroke', '#F43F5E');
+                    gaugeLabel.innerText = "Critical";
+                    gaugeLabel.className = "absolute text-[10px] font-mono font-bold text-coralWarning-400";
+                }
+            }
+        }
+
+        function triggerToastAlert(message, alertVariant = 'emerald') {
+            const toastFrame = document.getElementById('toast-wrapper');
+            const toastBody = document.getElementById('toast-text');
+            
+            toastBody.innerText = message;
+            
+            // Set dynamic visual theme borders based on alert intents
+            if (alertVariant === 'emerald') {
+                toastFrame.className = "absolute top-12 left-1/2 -translate-x-1/2 w-[88%] bg-obsidian-900 border border-emeraldGlow-500/40 text-emeraldGlow-400 rounded-2xl p-3.5 z-50 flex items-center gap-3 text-xs shadow-neon-emerald backdrop-glass transition-all duration-300 opacity-100 translate-y-0";
+            } else if (alertVariant === 'indigo') {
+                toastFrame.className = "absolute top-12 left-1/2 -translate-x-1/2 w-[88%] bg-obsidian-900 border border-velvetIndigo-500/40 text-velvetIndigo-400 rounded-2xl p-3.5 z-50 flex items-center gap-3 text-xs shadow-neon-indigo backdrop-glass transition-all duration-300 opacity-100 translate-y-0";
+            } else {
+                toastFrame.className = "absolute top-12 left-1/2 -translate-x-1/2 w-[88%] bg-obsidian-900 border border-coralWarning-500/40 text-coralWarning-400 rounded-2xl p-3.5 z-50 flex items-center gap-3 text-xs shadow-neon-coral backdrop-glass transition-all duration-300 opacity-100 translate-y-0";
+            }
+
+            // Auto-retract latency controls
+            setTimeout(() => {
+                toastFrame.classList.remove('opacity-100', 'translate-y-0');
+                toastFrame.classList.add('opacity-0', 'translate-y-[-24px]');
+            }, 2600);
+        }
+
+        // Initialize and bind core system listeners
+        window.onload = function() {
+            rebuildSQLiteLedgerDOM();
+            recomputeAllFinancialAggregations();
+        }
+    </script>
+</body>
+</html>
