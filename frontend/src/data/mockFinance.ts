@@ -26,13 +26,16 @@ export type CategoryOption = {
 export type Transaction = {
   id: string;
   title: string;
-  type: 'Income' | 'Expense';
+  type: 'Income' | 'Expense' | 'Refund' | 'Adjustment';
+  flow: 'inflow' | 'outflow';
   accountId: string;
   account: string;
   category: string;
   amount: number;
   status: 'local_sqlite' | 'synced_postgres';
   timestamp: string;
+  linkedTransactionId?: string;
+  note?: string;
 };
 
 export type DueItem = {
@@ -162,6 +165,7 @@ export const initialTransactions: Transaction[] = [
     id: 'tx_01',
     title: 'Blue Tokai Coffee Craft',
     type: 'Expense',
+    flow: 'outflow',
     accountId: 'acc_regalia',
     account: 'HDFC CC',
     category: 'Food & Lifestyle',
@@ -173,6 +177,7 @@ export const initialTransactions: Transaction[] = [
     id: 'tx_02',
     title: 'Consulting Retainer Credit',
     type: 'Income',
+    flow: 'inflow',
     accountId: 'acc_hdfc',
     account: 'HDFC Bank',
     category: 'Income Stream',
@@ -184,6 +189,7 @@ export const initialTransactions: Transaction[] = [
     id: 'tx_03',
     title: 'Swiggy Dinner Delivery',
     type: 'Expense',
+    flow: 'outflow',
     accountId: 'acc_paytm',
     account: 'Paytm Wallet',
     category: 'Food & Lifestyle',
