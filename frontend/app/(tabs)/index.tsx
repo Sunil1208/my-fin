@@ -9,6 +9,7 @@ import { FinanceHeader } from '@/src/components/FinanceHeader';
 import { LockedState } from '@/src/components/LockedState';
 import { ManualTransactionSheet } from '@/src/components/ManualTransactionSheet';
 import { MetricTile } from '@/src/components/MetricTile';
+import { ProfilePreferencesSheet } from '@/src/components/ProfilePreferencesSheet';
 import { TransactionRow } from '@/src/components/TransactionRow';
 import {
   AmountText,
@@ -28,6 +29,7 @@ export default function DashboardScreen() {
   const finance = useFinance();
   const [entryVisible, setEntryVisible] = useState(false);
   const [accountVisible, setAccountVisible] = useState(false);
+  const [profileVisible, setProfileVisible] = useState(false);
   const spendingPercent = (finance.currentMonthSpends / finance.spendingCeiling) * 100;
 
   return (
@@ -47,10 +49,32 @@ export default function DashboardScreen() {
                   <Text style={styles.profileLabel}>{finance.profile.workspace}</Text>
                   <Text style={styles.profileName}>{finance.profile.name}</Text>
                 </View>
-                <Pill accent={finance.tripActive ? 'indigo' : 'emerald'}>
-                  {finance.tripActive ? 'Trip mode' : 'Local shell'}
-                </Pill>
+                <View style={styles.profileActions}>
+                  <Pill accent={finance.tripActive ? 'indigo' : 'emerald'}>
+                    {finance.tripActive ? 'Trip mode' : 'Local shell'}
+                  </Pill>
+                  <GhostButton accent="muted" onPress={() => setProfileVisible(true)} style={styles.editProfileButton}>
+                    Edit
+                  </GhostButton>
+                </View>
               </View>
+
+              <Card style={styles.profileMatrix}>
+                <View style={styles.profileMatrixCell}>
+                  <Text style={styles.profileMatrixLabel}>Currency</Text>
+                  <Text style={styles.profileMatrixValue}>{finance.profile.defaultCurrency}</Text>
+                </View>
+                <View style={styles.profileMatrixCell}>
+                  <Text style={styles.profileMatrixLabel}>Cycle Start</Text>
+                  <Text style={styles.profileMatrixValue}>Day {finance.profile.cycleStartDay}</Text>
+                </View>
+                <View style={styles.profileMatrixCell}>
+                  <Text style={styles.profileMatrixLabel}>Timezone</Text>
+                  <Text numberOfLines={1} style={styles.profileMatrixValue}>
+                    {finance.profile.timezone}
+                  </Text>
+                </View>
+              </Card>
 
               <GradientCard>
                 <View style={styles.heroHeader}>
@@ -135,6 +159,7 @@ export default function DashboardScreen() {
             </Pressable>
             <ManualTransactionSheet onClose={() => setEntryVisible(false)} visible={entryVisible} />
             <AccountSetupSheet onClose={() => setAccountVisible(false)} visible={accountVisible} />
+            <ProfilePreferencesSheet onClose={() => setProfileVisible(false)} visible={profileVisible} />
           </>
         )}
       </SafeAreaView>
@@ -185,6 +210,37 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontFamily: fonts.sansBold,
     fontSize: 14,
+    letterSpacing: 0,
+  },
+  profileActions: {
+    alignItems: 'flex-end',
+    gap: spacing.sm,
+  },
+  editProfileButton: {
+    minHeight: 30,
+    minWidth: 58,
+    borderRadius: 10,
+  },
+  profileMatrix: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    paddingVertical: spacing.md,
+  },
+  profileMatrixCell: {
+    flex: 1,
+    gap: 4,
+  },
+  profileMatrixLabel: {
+    color: colors.obsidian400,
+    fontFamily: fonts.monoBold,
+    fontSize: 8,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
+  profileMatrixValue: {
+    color: colors.white,
+    fontFamily: fonts.sansBold,
+    fontSize: 11,
     letterSpacing: 0,
   },
   heroHeader: {
