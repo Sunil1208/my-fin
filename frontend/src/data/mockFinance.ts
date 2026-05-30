@@ -53,11 +53,24 @@ export type PortfolioAsset = {
   accent: 'emerald' | 'indigo' | 'coral';
 };
 
-export const profile = {
+export type Profile = {
+  name: string;
+  initials: string;
+  workspace: string;
+  email: string;
+  defaultCurrency: 'INR' | 'USD' | 'EUR' | 'GBP';
+  timezone: string;
+  cycleStartDay: number;
+};
+
+export const initialProfile: Profile = {
   name: 'Sunil Kumar',
   initials: 'SK',
   workspace: 'Personal Space',
   email: 'sunil.kumar@myfin.dev',
+  defaultCurrency: 'INR',
+  timezone: 'Asia/Kolkata',
+  cycleStartDay: 1,
 };
 
 export const initialAccounts: Account[] = [
