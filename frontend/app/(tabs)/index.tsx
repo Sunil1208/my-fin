@@ -4,6 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AccountBalanceCard } from '@/src/components/AccountBalanceCard';
+import { AccountSetupSheet } from '@/src/components/AccountSetupSheet';
 import { FinanceHeader } from '@/src/components/FinanceHeader';
 import { LockedState } from '@/src/components/LockedState';
 import { ManualTransactionSheet } from '@/src/components/ManualTransactionSheet';
@@ -14,6 +15,7 @@ import {
   AppBackground,
   Card,
   Eyebrow,
+  GhostButton,
   GradientCard,
   Pill,
   ProgressBar,
@@ -25,6 +27,7 @@ import { colors, fonts, shadows, spacing } from '@/src/theme/tokens';
 export default function DashboardScreen() {
   const finance = useFinance();
   const [entryVisible, setEntryVisible] = useState(false);
+  const [accountVisible, setAccountVisible] = useState(false);
   const spendingPercent = (finance.currentMonthSpends / finance.spendingCeiling) * 100;
 
   return (
@@ -100,7 +103,9 @@ export default function DashboardScreen() {
 
               <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>Account Balance Matrix</Text>
-                <Text style={styles.sectionLink}>MVP 1 buckets</Text>
+                <GhostButton accent="emerald" onPress={() => setAccountVisible(true)} style={styles.compactButton}>
+                  Add Account
+                </GhostButton>
               </View>
               <ScrollView
                 contentContainerStyle={styles.accountRail}
@@ -129,6 +134,7 @@ export default function DashboardScreen() {
               <SymbolView name={{ ios: 'plus', android: 'add', web: 'add' }} size={26} tintColor={colors.obsidian950} />
             </Pressable>
             <ManualTransactionSheet onClose={() => setEntryVisible(false)} visible={entryVisible} />
+            <AccountSetupSheet onClose={() => setAccountVisible(false)} visible={accountVisible} />
           </>
         )}
       </SafeAreaView>
@@ -252,6 +258,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    gap: spacing.md,
   },
   sectionTitle: {
     color: colors.obsidian400,
@@ -264,6 +271,9 @@ const styles = StyleSheet.create({
     color: colors.emerald400,
     fontFamily: fonts.sansBold,
     fontSize: 10,
+  },
+  compactButton: {
+    minHeight: 32,
   },
   feed: {
     gap: spacing.sm,

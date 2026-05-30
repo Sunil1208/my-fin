@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { Account } from '@/src/data/mockFinance';
-import { formatInr } from '@/src/lib/format';
+import { formatInr, formatPercent } from '@/src/lib/format';
 import { colors, fonts, radius, spacing } from '@/src/theme/tokens';
 import { Card, Pill } from '@/src/components/ui';
 
@@ -20,6 +20,12 @@ const accountTypeLabel = {
 
 export function AccountBalanceCard({ account }: { account: Account }) {
   const isCredit = account.type === 'credit-card';
+  const utilization =
+    isCredit && account.creditLimit ? (Math.abs(account.balance) / account.creditLimit) * 100 : 0;
+  const meta =
+    isCredit && account.creditLimit
+      ? `${formatPercent(utilization, 0)} used - due ${account.dueDay}`
+      : account.descriptor;
 
   return (
     <Card accent={account.accent} style={styles.card}>
@@ -33,7 +39,7 @@ export function AccountBalanceCard({ account }: { account: Account }) {
         <Text numberOfLines={1} style={styles.name}>
           {account.name}
         </Text>
-        <Text style={styles.descriptor}>{account.descriptor}</Text>
+        <Text style={styles.descriptor}>{meta}</Text>
       </View>
       <Text style={[styles.balance, isCredit && styles.creditBalance]}>
         {isCredit ? `-${formatInr(Math.abs(account.balance))}` : formatInr(account.balance)}
