@@ -6,6 +6,9 @@ export type Account = {
   type: AccountType;
   balance: number;
   descriptor: string;
+  creditLimit?: number;
+  billingDay?: number;
+  dueDay?: number;
   accent: 'emerald' | 'indigo' | 'coral';
 };
 
@@ -88,6 +91,9 @@ export const initialAccounts: Account[] = [
     type: 'credit-card',
     balance: -40000,
     descriptor: 'Statement cycle',
+    creditLimit: 200000,
+    billingDay: 12,
+    dueDay: 5,
     accent: 'coral',
   },
 ];

@@ -26,6 +26,17 @@ export type ManualTransactionInput = {
   categoryId: string;
 };
 
+export type AccountInput = {
+  name: string;
+  type: Account['type'];
+  balance: number;
+  descriptor: string;
+  accent: Account['accent'];
+  creditLimit?: number;
+  billingDay?: number;
+  dueDay?: number;
+};
+
 type FinanceContextValue = {
   accounts: Account[];
   categories: CategoryOption[];
@@ -54,6 +65,7 @@ type FinanceContextValue = {
   clearParser: () => void;
   commitParsedTransaction: () => boolean;
   addManualTransaction: (input: ManualTransactionInput) => boolean;
+  addAccount: (input: AccountInput) => boolean;
   toggleDueSettlement: (id: string) => void;
   toggleTripMode: () => void;
 };
@@ -87,8 +99,12 @@ export function FinanceProvider({ children }: PropsWithChildren) {
   );
 
   const illiquidAssets = useMemo(
-    () => portfolioAssets.reduce((sum, asset) => sum + asset.amount, 0),
-    [],
+    () =>
+      portfolioAssets.reduce((sum, asset) => sum + asset.amount, 0) +
+      accounts
+        .filter((account) => account.type === 'investment')
+        .reduce((sum, account) => sum + account.balance, 0),
+    [accounts],
   );
 
   const aggregateAssets = totalLiquidCash + illiquidAssets;
@@ -145,6 +161,50 @@ export function FinanceProvider({ children }: PropsWithChildren) {
     },
     [accounts],
   );
+
+  const addAccount = useCallback((input: AccountInput) => {
+    const name = input.name.trim();
+    const descriptor = input.descriptor.trim();
+    const rawBalance = Math.abs(Number(input.balance));
+
+    if (!name || !descriptor || Number.isNaN(rawBalance)) {
+      return false;
+    }
+
+    if (
+      input.type === 'credit-card' &&
+      (!input.creditLimit ||
+        input.creditLimit <= 0 ||
+        !input.billingDay ||
+        input.billingDay < 1 ||
+        input.billingDay > 31 ||
+        !input.dueDay ||
+        input.dueDay < 1 ||
+        input.dueDay > 31)
+    ) {
+      return false;
+    }
+
+    const nextAccount: Account = {
+      id: `acc_${Date.now()}`,
+      name,
+      type: input.type,
+      descriptor,
+      balance: input.type === 'credit-card' ? -rawBalance : rawBalance,
+      accent: input.accent,
+      creditLimit: input.type === 'credit-card' ? Math.abs(Number(input.creditLimit)) : undefined,
+      billingDay: input.type === 'credit-card' ? Number(input.billingDay) : undefined,
+      dueDay: input.type === 'credit-card' ? Number(input.dueDay) : undefined,
+    };
+
+    setAccounts((items) => [nextAccount, ...items]);
+
+    if (input.type === 'credit-card' && rawBalance > 0) {
+      setCardObligationAdjustment((value) => value + rawBalance);
+    }
+
+    return true;
+  }, []);
 
   const commitParsedTransaction = useCallback(() => {
     if (!parserResult) {
@@ -206,6 +266,7 @@ export function FinanceProvider({ children }: PropsWithChildren) {
       clearParser: () => setParserResult(null),
       commitParsedTransaction,
       addManualTransaction,
+      addAccount,
       toggleDueSettlement: (id: string) => {
         setDues((items) =>
           items.map((item) => (item.id === id ? { ...item, settled: !item.settled } : item)),
@@ -215,6 +276,7 @@ export function FinanceProvider({ children }: PropsWithChildren) {
     }),
     [
       accounts,
+      addAccount,
       activeObligations,
       addManualTransaction,
       aggregateAssets,
